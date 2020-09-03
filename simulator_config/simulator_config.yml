@@ -1,0 +1,124 @@
+!!com.snobot.simulator.config.v1.SimulatorConfigV1
+mAccelerometers: []
+mAnalogIn:
+- mHandle: 0
+  mName: Analog In 0
+  mType: com.snobot.simulator.module_wrapper.wpi.WpiAnalogInWrapper
+- mHandle: 1
+  mName: Analog In 1
+  mType: com.snobot.simulator.module_wrapper.wpi.WpiAnalogInWrapper
+mAnalogOut: []
+mDefaultI2CWrappers: {}
+mDefaultSpiWrappers: {}
+mDigitalIO:
+- mHandle: 1
+  mName: Digital 1
+  mType: com.snobot.simulator.module_wrapper.wpi.WpiDigitalIoWrapper
+- mHandle: 2
+  mName: Digital IO 2
+  mType: com.snobot.simulator.module_wrapper.wpi.WpiDigitalIoWrapper
+- mHandle: 3
+  mName: Digital IO 3
+  mType: com.snobot.simulator.module_wrapper.wpi.WpiDigitalIoWrapper
+mEncoders: []
+mGyros: []
+mPwm:
+- mHandle: 104
+  mMotorModelConfig:
+    mGearReduction: 10.7142857143
+    mGearboxEfficiency: 0.9
+    mHasBrake: false
+    mInverted: true
+    mMotorType: CIM
+    mNumMotors: 1
+  mMotorSimConfig: !!com.snobot.simulator.motor_sim.StaticLoadMotorSimulationConfig
+    mConversionFactor: 0.16666666666
+    mLoad: 0.6
+  mName: Left Front Drive
+  mType: com.snobot.simulator.simulator_components.ctre.CtreTalonSrxSpeedControllerSim
+- mHandle: 105
+  mMotorModelConfig:
+    mGearReduction: 10.7142857143
+    mGearboxEfficiency: 0.9
+    mHasBrake: false
+    mInverted: true
+    mMotorType: CIM
+    mNumMotors: 1
+  mMotorSimConfig: !!com.snobot.simulator.motor_sim.StaticLoadMotorSimulationConfig
+    mConversionFactor: 0.16666666666
+    mLoad: 0.6
+  mName: Left Back Drive
+  mType: com.snobot.simulator.simulator_components.ctre.CtreTalonSrxSpeedControllerSim
+- mHandle: 106
+  mMotorModelConfig:
+    mGearReduction: 10.7142857143
+    mGearboxEfficiency: 0.9
+    mHasBrake: false
+    mInverted: false
+    mMotorType: CIM
+    mNumMotors: 1
+  mMotorSimConfig: !!com.snobot.simulator.motor_sim.StaticLoadMotorSimulationConfig
+    mConversionFactor: 0.16666666666
+    mLoad: 0.6
+  mName: Right Front Drive
+  mType: com.snobot.simulator.simulator_components.ctre.CtreTalonSrxSpeedControllerSim
+- mHandle: 107
+  mMotorModelConfig:
+    mGearReduction: 10.7142857143
+    mGearboxEfficiency: 0.9
+    mHasBrake: false
+    mInverted: false
+    mMotorType: CIM
+    mNumMotors: 1
+  mMotorSimConfig: !!com.snobot.simulator.motor_sim.StaticLoadMotorSimulationConfig
+    mConversionFactor: 0.16666666666
+    mLoad: 0.6
+  mName: Right Back Drive
+  mType: com.snobot.simulator.simulator_components.ctre.CtreTalonSrxSpeedControllerSim
+- mHandle: 108
+  mMotorModelConfig: null
+  mMotorSimConfig: null
+  mName: CAN SC 8
+  mType: com.snobot.simulator.simulator_components.ctre.CtreTalonSrxSpeedControllerSim
+- mHandle: 109
+  mMotorModelConfig: null
+  mMotorSimConfig: null
+  mName: CAN SC 9
+  mType: com.snobot.simulator.simulator_components.ctre.CtreTalonSrxSpeedControllerSim
+- mHandle: 110
+  mMotorModelConfig: null
+  mMotorSimConfig: null
+  mName: CAN SC 10
+  mType: com.snobot.simulator.simulator_components.ctre.CtreTalonSrxSpeedControllerSim
+- mHandle: 112
+  mMotorModelConfig: null
+  mMotorSimConfig: null
+  mName: CAN SC 12
+  mType: com.snobot.simulator.simulator_components.ctre.CtreTalonSrxSpeedControllerSim
+mRelays: []
+mSimulatorComponents: []
+mSolenoids:
+- mHandle: 20
+  mName: Solenoid 20
+  mType: com.snobot.simulator.module_wrapper.wpi.WpiSolenoidWrapper
+- mHandle: 21
+  mName: Solenoid 21
+  mType: com.snobot.simulator.module_wrapper.wpi.WpiSolenoidWrapper
+- mHandle: 22
+  mName: Solenoid 22
+  mType: com.snobot.simulator.module_wrapper.wpi.WpiSolenoidWrapper
+- mHandle: 23
+  mName: Solenoid 23
+  mType: com.snobot.simulator.module_wrapper.wpi.WpiSolenoidWrapper
+- mHandle: 28
+  mName: Solenoid 28
+  mType: com.snobot.simulator.module_wrapper.wpi.WpiSolenoidWrapper
+- mHandle: 29
+  mName: Solenoid 29
+  mType: com.snobot.simulator.module_wrapper.wpi.WpiSolenoidWrapper
+- mHandle: 30
+  mName: Solenoid 30
+  mType: com.snobot.simulator.module_wrapper.wpi.WpiSolenoidWrapper
+- mHandle: 31
+  mName: Solenoid 31
+  mType: com.snobot.simulator.module_wrapper.wpi.WpiSolenoidWrapper
