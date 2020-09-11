@@ -1,16 +1,21 @@
 package frc.robot;
 
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+
 public class Drivetrain {
 
     private static final double DEADBAND_LIMIT = 0.02;
 
     private DriveModule left;
     private DriveModule right;
+    private DoubleSolenoid pto;
 
-    Drivetrain(DriveModule left, DriveModule right){
+    Drivetrain(DriveModule left, DriveModule right, DoubleSolenoid pto) {
         this.left = left;
         this.right = right;
         right.setInverted(true);
+
+        this.pto = pto;
     }
 
     /**
@@ -33,24 +38,23 @@ public class Drivetrain {
         right.set(sp);
     }
 
-       /**
-    * Normalizes the input to 0.0 if it is below the value set by
-    * {@link #DEADBAND_LIMIT} This is primarily used for reducing the strain on
-    * motors.
-    *
-    * @param in the input to check
-    * @return 0.0 if {@code in} is less than abs(DEADBAND_LIMIT) else {@code in}
-    */
+    /**
+     * Normalizes the input to 0.0 if it is below the value set by
+     * {@link #DEADBAND_LIMIT} This is primarily used for reducing the strain on
+     * motors.
+     *
+     * @param in the input to check
+     * @return 0.0 if {@code in} is less than abs(DEADBAND_LIMIT) else {@code in}
+     */
     public double deadband(double in) {
         return Math.abs(in) > DEADBAND_LIMIT ? in : 0.0;
     }
 
     public void setPTO(boolean engaged) {
-        left.setPTO(engaged);
-        right.setPTO(engaged);
+        pto.set(engaged ? DoubleSolenoid.Value.kForward : DoubleSolenoid.Value.kReverse);
     }
 
-        /**
+    /**
      * Drives the robot with an arcade style drive
      *
      * @param xDrive The speed to drive the drivetrain in the x direction (ranges

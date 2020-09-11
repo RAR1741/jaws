@@ -52,10 +52,12 @@ public class Robot extends TimedRobot {
   public void robotInit() {
 
     System.out.print("Initializing drivetrain...");
-    DriveModule leftModule = new DriveModule(new Talon(5), new Talon(6), new DoubleSolenoid(2, 2));
-    DriveModule rightModule = new DriveModule(new Talon(8), new Talon(9), new DoubleSolenoid(2, 2));
-    drive = new Drivetrain(leftModule, rightModule);
+    DriveModule leftModule = new DriveModule(new Talon(2), new Talon(3));
+    DriveModule rightModule = new DriveModule(new Talon(0), new Talon(1));
+    drive = new Drivetrain(leftModule, rightModule, new DoubleSolenoid(1, 0, 1));
     System.out.println("done");
+
+    driver = new XboxController(0);
 
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
@@ -103,13 +105,13 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
     switch (m_autoSelected) {
-    case kCustomAuto:
-      // Put custom auto code here
-      break;
-    case kDefaultAuto:
-    default:
-      // Put default auto code here
-      break;
+      case kCustomAuto:
+        // Put custom auto code here
+        break;
+      case kDefaultAuto:
+      default:
+        // Put default auto code here
+        break;
     }
   }
 
@@ -119,14 +121,16 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
 
-    double turnInput = deadband(driver.getX(Hand.kRight));
-    double speedInput = deadband(driver.getY(Hand.kLeft));
+    double leftDrive = -deadband(driver.getY(Hand.kRight));
+    double rightDrive = deadband(driver.getY(Hand.kLeft));
 
     // Limit speed input to a lower percentage unless boost mode is on
     boost.setEnabled(driver.getTriggerAxis(Hand.kLeft) > 0.5);
-    speedInput = boost.scale(speedInput);
+    // speedInput = boost.scale(speedInput);
 
-    drive.arcadeDrive(turnInput, speedInput);
+    drive.tankDrive(leftDrive, rightDrive);
+
+    // drive.arcadeDrive(turnInput, speedInput);
   }
 
   /**
