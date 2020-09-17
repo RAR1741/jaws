@@ -19,7 +19,7 @@ public class Collection {
      * @param collect true if collecting, false if not.
      */
     public void setCollecting(boolean collect) {
-        spinWheel.setSpeed(1);
+        spinWheel.setSpeed(collect ? 1 : 0);
     }
 
     /**
