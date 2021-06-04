@@ -8,7 +8,7 @@ import static org.junit.Assert.assertEquals;
 public class ConfigTest {
     private static double CLOSE_ENOUGH = 0.01;
     @BeforeClass
-    public void configSetup() {
+    public static void configSetup() {
         Config.initSettings();
     }
 
