@@ -15,77 +15,118 @@ public class Config {
 
     static class ConfigValues {
         // I didn't feel like doing any file i/o stuff, so this is what you get.
-        // BEGIN: config.txt circa Nov 26, 2013
+        // BEGIN: config.txt circa May 4, 2014
         public static double
-                //#drive section
-                //drive_kp = 0.000130, //original 4-16-13
-                drive_kp = 0.000505,
-                //drive_ki = 0.0000080, //original 4-16-13
-                drive_ki = 0.0000330,
-                //drive_kd = 0.000300, //original 4-16-13
-                drive_kd = 0.000405, drive_encoderlines = 250, drive_max_speed = 4500,
-                //    1=voltage, 2=speed
-                control_mode = 2, drive_ratelimit_perTick = 900, drive_speed_modify = 0.5,
-                //#end drive section
-
-                //#shooter section
-                angle_power = .75, angle_power_slow = 0.25, loader_power = -0.75,
-                //shooter_kp = -0.25 orginal 4-20-13
-                shooter_kp = -1,
-                //shooter_ki = -0.005 original 4-20-13
-                shooter_ki = -0.02, shooter_kd = -0.0001,
-
-                rear_kp = -0.25, rear_ki = -0.005, rear_kd = -0.0001,
-
-                lever_kp = 20, lever_ki = 0, lever_kd = 0,
-
-                shooter_homing_turnaround_time = 2, shooter_homing_up_speed = 1, shooter_homing_down_speed = -1,
-                shooter_angle_tolerance = 10,
-
-                home_position_shaft_length = 9.5, crouch_angle = 10,
-
-                wheel_deadzone = .03,
-
-                //#### WHISBEE
-                pyramid_shooting_angle = 22.5, shooter_loading_angle = 10, load_zone_shooting_angle = 14.25,
-                pyramid_basket_angle = 30,
-                //####
-
-                //### RIZZLER
-                //pyramid_shooting_angle = 26.5,
-                //shooter_loading_angle = 10,
-                //load_zone_shooting_angle = 12,
-                //pyramid_basket_angle = 35,
-                //###
-
-                //#RPM
-                //shooter_main_speed = 4500, //original 4-20-13
-                shooter_main_speed = 4000,
-                //shooter_secondary_speed = 3000, //original 4-20-13
-                shooter_secondary_speed = 2000, shooter_main_speed_pyramid = 2300,
-                shooter_secondary_speed_pyramid = 2000, shooter_angle_bias = 0,
-
-                //#Percentage
-                shooter_front_wheel_manual = 1.0, shooter_rear_wheel_manual = 0.7,
-
-                //#end shooter section
-
-                target_camera_fov = 57, target_rotate_scale = .5, target_rotate_tolerance = 1,
-
-                //#Autonomous section
-                autoProgram = 1, auto_spinup_delay = 2.0,
-                //auto_Front_Wheel_Speed = 4500, //original 4-20-13
-                //auto_Rear_Wheel_Speed = 3000, //original 4-20-13
-                auto_Front_Wheel_Speed = 4000, auto_Rear_Wheel_Speed = 2500, auto_Shooter_Tolerance = 200,
-                auto_delay = 1, auto_angle = 22.5,
-                //auto_angle = 22.75,
-                //#End autonomous section
-
-                //#Funnel Control
-                funnel_release_angle = 35
-                //#End funnel control
-        ; // END: config.txt
-        // Close enough lol...
+        //# config.txt
+        //# CAM PID
+        //cam_p = .08
+        //cam_i = .0001
+        //cam_d = 0.2
+        
+        cam_p = 0.08,
+        cam_i = 0.00005,
+        cam_d = 0.8,
+        
+        //# Robot Loop period
+        robot_loop_period = .02,
+        
+        //# CAM
+        cam_loop_period = 0.004,
+        robot_cam_rearm_rate = 25,
+        
+        // cam_ready_to_fire_position = 46.7,
+        // cam_point_of_no_return = 51,
+        // cam_fire_to_position = 52.3,
+        
+        cam_ready_to_fire_position = 54,
+        cam_fire_to_position = 63,
+        cam_point_of_no_return = 58,
+        
+        //cam_fire_position_tolerance = 1, //This was the original value, changed to 3 to make more responsive
+        cam_fire_position_tolerance = 3,
+        cam_setpoint_error_limit = 25,
+        cam_home_speed = .6,
+        cam_home_speed_slow = .25,
+        cam_home_speed_cutoff = 50,
+        cam_eject_position = 21,
+        
+        //#Odometer stuff
+        //auto_firing_distance = 96, //#Distance from the goal that robot will be shooting from in inches
+        auto_collection_delay = 1.0,
+        odometer_auto_speed = -.1,
+        
+        //# Autonomous
+        auto_case = 5,
+        auto_heading_p = 0.04,
+        auto_speed = -1.0, //#-0.6 
+        //#0.5
+        auto_firing_distance = 132,
+        auto_drive_distance = 100,
+        auto_target_timeout = 1.0,
+        auto_target_hot_timeout = 5.0,
+        
+        //#Driving variables
+        // xaxis_percent = 1,
+        
+        
+        //# Autonomous mode 5 variables - Two ball drag mode
+        auton5_drive_speed = -1.0,
+        auton5_gyro_reset_delay = 2.0,
+        auton5_extend_delay = 1.0,
+        auton5_drag_speed = -0.4,
+        auton5_drive_distance = 120.0,
+        auton5_eject_speed = 0.0,
+        auton5_ball_1_launch_delay = 0.5,
+        auton5_ball_2_ready2fire_delay = 1.5,
+        auton5_intake_roller_speed = -0.7,
+        auton5_ball_2_settle_delay = 2.5,
+        auton5_uneject_time = 1.0,
+        auton5_backup_distance = 6,
+        
+        //# Autonomous mode 6 variables - Two ball retrieve mode
+        auton6_drive_forward_distance = 96.0,
+        auton6_ball_1_fire_delay = 1.0,
+        auton6_intake_roller_speed = 1.0,
+        auton6_ball_2_load_delay = 1.0,
+        
+        //# Autonomous mode 7 variables - Two ball drag mode
+        auton7_gyro_reset_delay = 2.0,
+        auton7_extend_delay = 1.0,
+        auton7_drag_speed = -0.39,
+        auton7_drive_distance = 108.0,
+        auton7_eject_speed = 0.0,
+        auton7_ball_1_launch_delay = 1.5,
+        auton7_ball_2_ready2fire_delay = 1.5,
+        auton7_intake_roller_speed = -0.7,
+        auton7_ball_2_settle_delay = 2.5,
+        auton7_uneject_time = 0.5,
+        auton7_backup_distance = 6,
+        
+        
+        
+        //# collection
+        intake_roller_speed = 1,
+        
+        //#Driving variables
+        xaxis_percent = .75,
+        
+        //# Camera meta-config (meant for dashboard, not robot)
+        target_r = 55,
+        target_g = 231,
+        target_b = 221,
+        
+        target_r_down_limit = 0,
+        target_r_up_limit = 60,
+        
+        target_g_down_limit = 200,
+        target_g_up_limit = 255,
+        
+        target_b_down_limit = 200,
+        target_b_up_limit = 255,
+        
+        drive_encoderlines = 250,
+        drive_max_speed = 5000
+        ;
     }
 
     public static void loadFromFile(String filename) {
