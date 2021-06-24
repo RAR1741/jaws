@@ -8,8 +8,11 @@ import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 
 public class Shooter {
 
-    private final double CamFirePositionTolerance = 0; //TODO: Determine tolerance
-    private final double CamPointOfNoReturn = 0; //TODO: Determine point of no return
+    private final double FirePositionTolerance = 0; //TODO: Determine tolerance
+    private final double PointOfNoReturn = 0; //TODO: Determine point of no return
+    private final double ReadyToFirePosition = 0; //TODO: Determine ready to fire position
+    private final double EjectPosition = 0; //TODO: Determine eject position
+    private final double FireToPosition = 0; //TODO: Determing fire to position
 
     private Talon motorLeft, motorRight;
     private Encoder ShooterEncoder;
@@ -18,8 +21,11 @@ public class Shooter {
     private PIDController PID;
     public State state;
 
+    private boolean fire, rearm, eject;
+    private double startPosition;
+
     public enum State {
-        Rearming, Firing, ReadyToFire, Calibration, Homing, Ejecting;
+        Rearming, Firing, ReadyToFire, Homing, Ejecting;
     }
 
     Shooter (Talon moterLeft, Talon motorRight, int encoderA, int encoderB, DigitalInput indexSensor, DigitalInput scopeToggle, DigitalInput scopeCycle){
@@ -34,7 +40,7 @@ public class Shooter {
         PID = new PIDController(0.04, 0.005, 0.03);
         // PID = new PIDController(0.04, 0.005, 0.03, ShooterEncoder);
 
-
+        startPosition = motorLeft.getPosition();
         state = State.Homing;
     }
 
@@ -55,25 +61,68 @@ public class Shooter {
     }
 
     private double getPosition(){
-        return motorLeft.get();
+        return motorLeft.getPosition() - startPosition;
     }
 
-    private void run(){
-        State nextState;
+    private void setPosition(double setpoint){
+        PID.setSetpoint(setpoint);
+    }
+
+    private void resetEncoders(){
+        startPosition = motorLeft.getPosition();
+    }
+
+    private void run(boolean fire, boolean rearm, boolean eject){
+        this.fire = fire;
+        this.rearm = rearm;
+        this.eject = eject;
+        State nextState = state;
         if(enabled){
             switch(state){
                 case Rearming:
-                    if(Math.abs(PID.getPositionError()) < CamFirePositionTolerance)
+                    if(Math.abs(PID.getPositionError()) < FirePositionTolerance)
                         nextState = State.ReadyToFire;
-                    if(ShooterEncoder.get() >= CamPointOfNoReturn)
+                    if(ShooterEncoder.get() >= PointOfNoReturn)
                         nextState = State.Firing;
                     break;
 
+                case ReadyToFire:
+                    if(fire)
+                        nextState = State.Firing;
+                    if(getPosition() >= PointOfNoReturn)
+                        nextState = State.Firing;
+                    else if (eject){
+                        setPosition(EjectPosition);
+                        nextState = State.Ejecting;
+                    }
+                    break;
 
+                case Firing:
+                    setPosition(FireToPosition);
+                    if(Math.abs(PID.getPositionError()) < FirePositionTolerance && rearm){
+                        nextState = State.Homing;
+                    }
+                    break;
 
+                case Homing:
+                    if(getIndexTripped()){
+                        resetEncoders();
+                        setPosition(ReadyToFirePosition);
+                        nextState = State.Rearming;
+                    }
+                    break;
 
-                    
+                case Ejecting:
+                    if(!eject){
+                        setPosition(ReadyToFirePosition);
+                        nextState = State.Rearming;
+                    }
+                    break;
+
+                default:
+                    break;
             }
+            state = nextState;
         }
     }
 }
