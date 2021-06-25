@@ -4,7 +4,6 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.Talon;
-import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 
 public class Shooter {
 
@@ -16,29 +15,23 @@ public class Shooter {
 
     private Talon motorLeft, motorRight;
     private Encoder ShooterEncoder;
-    private DigitalInput indexSensor, scopeToggle, scopeCycle;
+    private DigitalInput indexSensor;
     private boolean enabled;
     private PIDController PID;
     public State state;
 
-    private boolean fire, rearm, eject;
     private double startPosition;
 
     public enum State {
         Rearming, Firing, ReadyToFire, Homing, Ejecting;
     }
 
-    Shooter (Talon moterLeft, Talon motorRight, int encoderA, int encoderB, DigitalInput indexSensor, DigitalInput scopeToggle, DigitalInput scopeCycle){
+    Shooter (Talon moterLeft, Talon motorRight, DigitalInput indexSensor){
         this.motorLeft = moterLeft;
         this.motorRight = motorRight;
         this.indexSensor = indexSensor;
-        this.scopeCycle = scopeCycle;
-        this.scopeToggle = scopeToggle;
-
-        ShooterEncoder = new Encoder(encoderA, encoderB, false, EncodingType.k4X);
 
         PID = new PIDController(0.04, 0.005, 0.03);
-        // PID = new PIDController(0.04, 0.005, 0.03, ShooterEncoder);
 
         startPosition = motorLeft.getPosition();
         state = State.Homing;
@@ -73,9 +66,6 @@ public class Shooter {
     }
 
     private void run(boolean fire, boolean rearm, boolean eject){
-        this.fire = fire;
-        this.rearm = rearm;
-        this.eject = eject;
         State nextState = state;
         if(enabled){
             switch(state){
@@ -122,6 +112,8 @@ public class Shooter {
                 default:
                     break;
             }
+            motorLeft.set(PID.calculate(motorLeft.getPosition()));
+            motorRight.set(PID.calculate(motorRight.getPosition()));
             state = nextState;
         }
     }
