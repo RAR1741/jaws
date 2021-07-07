@@ -7,7 +7,11 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -26,12 +30,23 @@ public class Robot extends TimedRobot {
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
+  XboxController driver = null;
+  Collection collection = null;
+
   /**
    * This function is run when the robot is first started up and should be used
    * for any initialization code.
    */
   @Override
   public void robotInit() {
+
+    System.out.print("Initializing collection...");
+    Collection collection = new Collection(new Talon(8), new DoubleSolenoid(1, 2, 3));
+    System.out.println("done");
+
+    driver = new XboxController(0);
+
+
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
@@ -93,6 +108,15 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
+    
+    collection.setCollecting(driver.getTriggerAxis(Hand.kRight) > 0.5);
+
+    if (driver.getBumperPressed(Hand.kRight)) {
+      collection.setExtended(true);
+    } else if (driver.getBumperPressed(Hand.kLeft)) {
+      collection.setExtended(false);
+    }
+
   }
 
   /**
