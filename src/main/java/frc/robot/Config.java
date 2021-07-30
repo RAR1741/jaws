@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.lang.reflect.Field;
 
 /**
- * 
+ *
  */
 public class Config {
     /**
@@ -113,7 +113,7 @@ public class Config {
     public static double getSetting(String name) {
         return getSetting(name, -0d); // yup, floats can be -0
     }
-    
+
     public static double getSetting(String name, double reasonableDefault) {
         // The only reason I wanted a map lol
         return mSettings.getOrDefault(name, reasonableDefault);
