@@ -19,7 +19,15 @@ jobs:
         with:
           java-version: "11"
           distribution: "adopt"
+
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
+
       - name: Test with Gradle
         run: ./gradlew test
+
+      - name: Run CodeCov
+        run: ./gradlew jacocoTestReport
+
+      - name: Upload Coverage Report
+        run: bash <(curl -s https://codecov.io/bash)

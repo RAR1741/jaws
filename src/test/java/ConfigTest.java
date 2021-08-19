@@ -33,4 +33,12 @@ public class ConfigTest {
         assertEquals(-0d, Config.getSetting("UNKNOWN_SETTING"), CLOSE_ENOUGH);
     }
 
+    @Test
+    public void configLoadFromFile() {
+        // This doesn't actually do anything
+        // other than the default init right now
+        Config.loadFromFile("test_file.txt");
+
+        assertEquals(35, Config.getSetting("funnel_release_angle"), CLOSE_ENOUGH);
+    }
 }
