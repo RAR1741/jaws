@@ -8,8 +8,6 @@ public class DriveModule {
     private Talon master;
     private Talon slave;
 
-    private DoubleSolenoid pto;
-
     DriveModule(Talon master, Talon slave) {
         this.master = master;
         this.slave = slave;

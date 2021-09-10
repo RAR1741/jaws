@@ -52,9 +52,9 @@ public class Robot extends TimedRobot {
   public void robotInit() {
 
     System.out.print("Initializing drivetrain...");
-    DriveModule leftModule = new DriveModule(new Talon(2), new Talon(3));
-    DriveModule rightModule = new DriveModule(new Talon(0), new Talon(1));
-    drive = new Drivetrain(leftModule, rightModule, new DoubleSolenoid(1, 0, 1));
+    DriveModule leftModule = new DriveModule(new Talon(13), new Talon(3));
+    DriveModule rightModule = new DriveModule(new Talon(1), new Talon(15));
+    drive = new Drivetrain(leftModule, rightModule, new DoubleSolenoid(0, 1));
     System.out.println("done");
 
     driver = new XboxController(0);
