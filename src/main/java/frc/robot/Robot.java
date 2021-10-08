@@ -7,7 +7,11 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -26,12 +30,35 @@ public class Robot extends TimedRobot {
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
+  XboxController driver = null;
+  Drivetrain drive = null;
+
+  private static final double DEADBAND_LIMIT = 0.01;
+  private static final double SPEED_CAP = 0.6;
+  InputScaler joystickDeadband = new Deadband(DEADBAND_LIMIT);
+  InputScaler joystickSquared = new SquaredInput(DEADBAND_LIMIT);
+  BoostInput boost = new BoostInput(SPEED_CAP);
+
+  public double deadband(double in) {
+    double out = joystickSquared.scale(in);
+    return joystickDeadband.scale(out);
+  }
+
   /**
    * This function is run when the robot is first started up and should be used
    * for any initialization code.
    */
   @Override
   public void robotInit() {
+
+    System.out.print("Initializing drivetrain...");
+    DriveModule leftModule = new DriveModule(new Talon(13), new Talon(3));
+    DriveModule rightModule = new DriveModule(new Talon(1), new Talon(15));
+    drive = new Drivetrain(leftModule, rightModule, new DoubleSolenoid(0, 1));
+    System.out.println("done");
+
+    driver = new XboxController(0);
+
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
@@ -78,13 +105,13 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
     switch (m_autoSelected) {
-    case kCustomAuto:
-      // Put custom auto code here
-      break;
-    case kDefaultAuto:
-    default:
-      // Put default auto code here
-      break;
+      case kCustomAuto:
+        // Put custom auto code here
+        break;
+      case kDefaultAuto:
+      default:
+        // Put default auto code here
+        break;
     }
   }
 
@@ -93,6 +120,20 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
+
+    // TODO before next test add in gearshift solenoid and temp for testing main arm
+    // solenoid
+
+    double leftDrive = -deadband(driver.getY(Hand.kRight));
+    double rightDrive = deadband(driver.getY(Hand.kLeft));
+
+    // Limit speed input to a lower percentage unless boost mode is on
+    boost.setEnabled(driver.getTriggerAxis(Hand.kLeft) > 0.5);
+    // speedInput = boost.scale(speedInput);
+
+    drive.tankDrive(leftDrive, rightDrive);
+
+    // drive.arcadeDrive(turnInput, speedInput);
   }
 
   /**
