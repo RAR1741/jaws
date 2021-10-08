@@ -1,7 +1,6 @@
 package frc.robot;
 
-public class BoostInput implements InputScaler
-{
+public class BoostInput implements InputScaler {
   private final double powerCap;
   private boolean enabled;
 
