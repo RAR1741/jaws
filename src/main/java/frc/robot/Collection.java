@@ -15,16 +15,16 @@ public class Collection {
 
     /**
      * Sets if collecting balls.
-     * 
+     *
      * @param collect true if collecting, false if not.
      */
     public void setCollecting(boolean collect) {
-        spinWheel.setSpeed(collect ? 1 : 0);
+        spinWheel.setSpeed(collect ? -0.7 : 0);
     }
 
     /**
      * Sets if collector is extended.
-     * 
+     *
      * @param extend true if extended, false if not.
      */
     public void setExtended(boolean extend) {

@@ -41,7 +41,7 @@ public class Robot extends TimedRobot {
   public void robotInit() {
 
     System.out.print("Initializing collection...");
-    Collection collection = new Collection(new Talon(8), new DoubleSolenoid(1, 2, 3));
+    collection = new Collection(new Talon(7), new DoubleSolenoid(1, 2, 3));
     System.out.println("done");
 
     driver = new XboxController(0);
@@ -108,7 +108,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
-    
+
     collection.setCollecting(driver.getTriggerAxis(Hand.kRight) > 0.5);
 
     if (driver.getBumperPressed(Hand.kRight)) {
