@@ -7,9 +7,15 @@ import static org.junit.Assert.assertEquals;
 
 public class ConfigTest {
     private static double CLOSE_ENOUGH = 0.01;
+
     @BeforeClass
     public static void configSetup() {
         Config.initSettings();
+    }
+
+    @Test
+    public void test() {
+        assertEquals(1, 1);
     }
 
     @Test
@@ -26,5 +32,13 @@ public class ConfigTest {
     public void configGetUnknownSetting() {
         assertEquals(-0d, Config.getSetting("UNKNOWN_SETTING"), CLOSE_ENOUGH);
     }
-    
+
+    @Test
+    public void configLoadFromFile() {
+        // This doesn't actually do anything
+        // other than the default init right now
+        Config.loadFromFile("test_file.txt");
+
+        assertEquals(35, Config.getSetting("funnel_release_angle"), CLOSE_ENOUGH);
+    }
 }
