@@ -121,6 +121,9 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
 
+    // TODO before next test add in gearshift solenoid and temp for testing main arm
+    // solenoid
+
     double leftDrive = -deadband(driver.getY(Hand.kRight));
     double rightDrive = deadband(driver.getY(Hand.kLeft));
 
