@@ -1,7 +1,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.Talon;
+import edu.wpi.first.wpilibj.motorcontrol.Talon;
 
 public class DriveModule {
 
@@ -19,8 +19,8 @@ public class DriveModule {
     }
 
     public void set(double input) {
-        master.setSpeed(input);
-        slave.setSpeed(input);
+        master.set(input);
+        slave.set(input);
     }
 
 }

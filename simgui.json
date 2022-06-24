@@ -1,0 +1,20 @@
+{
+  "NTProvider": {
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/LiveWindow/Ungrouped/Talon[13]": "Motor Controller",
+      "/LiveWindow/Ungrouped/Talon[15]": "Motor Controller",
+      "/LiveWindow/Ungrouped/Talon[1]": "Motor Controller",
+      "/LiveWindow/Ungrouped/Talon[3]": "Motor Controller",
+      "/SmartDashboard/Auto choices": "String Chooser"
+    }
+  },
+  "NetworkTables": {
+    "SmartDashboard": {
+      "Auto choices": {
+        "open": true
+      },
+      "open": true
+    }
+  }
+}

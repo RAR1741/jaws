@@ -7,11 +7,12 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.Talon;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -32,6 +33,8 @@ public class Robot extends TimedRobot {
 
   XboxController driver = null;
   Drivetrain drive = null;
+
+  Compressor compressor;
 
   private static final double DEADBAND_LIMIT = 0.01;
   private static final double SPEED_CAP = 0.6;
@@ -54,7 +57,8 @@ public class Robot extends TimedRobot {
     System.out.print("Initializing drivetrain...");
     DriveModule leftModule = new DriveModule(new Talon(13), new Talon(3));
     DriveModule rightModule = new DriveModule(new Talon(1), new Talon(15));
-    drive = new Drivetrain(leftModule, rightModule, new DoubleSolenoid(0, 1));
+    drive = new Drivetrain(leftModule, rightModule, new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 1));
+    compressor = new Compressor(PneumaticsModuleType.CTREPCM);
     System.out.println("done");
 
     driver = new XboxController(0);
@@ -124,11 +128,11 @@ public class Robot extends TimedRobot {
     // TODO before next test add in gearshift solenoid and temp for testing main arm
     // solenoid
 
-    double leftDrive = -deadband(driver.getY(Hand.kRight));
-    double rightDrive = deadband(driver.getY(Hand.kLeft));
+    double leftDrive = deadband(driver.getRightY());
+    double rightDrive = deadband(driver.getLeftY());
 
     // Limit speed input to a lower percentage unless boost mode is on
-    boost.setEnabled(driver.getTriggerAxis(Hand.kLeft) > 0.5);
+    boost.setEnabled(driver.getLeftTriggerAxis() > 0.5);
     // speedInput = boost.scale(speedInput);
 
     drive.tankDrive(leftDrive, rightDrive);
