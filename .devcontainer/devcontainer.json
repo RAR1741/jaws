@@ -12,7 +12,7 @@
       // Options
       "INSTALL_MAVEN": "false",
       "INSTALL_GRADLE": "true",
-      "NODE_VERSION": "lts/*"
+      "NODE_VERSION": "none"
     }
   },
 

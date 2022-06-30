@@ -7,6 +7,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -50,6 +51,11 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+
+    System.out.print("Initializing shooter...");
+    Shooter shooter = new Shooter(new Talon(14), new Talon(12), new DigitalInput(0));
+    System.out.println("done");
+
 
     System.out.print("Initializing drivetrain...");
     DriveModule leftModule = new DriveModule(new Talon(13), new Talon(3));
