@@ -32,6 +32,8 @@ public class Robot extends TimedRobot {
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
   XboxController driver = null;
+  Collection collection = null;
+
   Drivetrain drive = null;
 
   Compressor compressor;
@@ -57,8 +59,9 @@ public class Robot extends TimedRobot {
     System.out.print("Initializing drivetrain...");
     DriveModule leftModule = new DriveModule(new Talon(13), new Talon(3));
     DriveModule rightModule = new DriveModule(new Talon(1), new Talon(15));
+    collection = new Collection(new Talon(7), new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 2, 3));
     drive = new Drivetrain(leftModule, rightModule, new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 1));
-    compressor = new Compressor(PneumaticsModuleType.CTREPCM);
+    compressor = new Compressor(1, PneumaticsModuleType.CTREPCM);
     System.out.println("done");
 
     driver = new XboxController(0);
@@ -138,6 +141,14 @@ public class Robot extends TimedRobot {
     drive.tankDrive(leftDrive, rightDrive);
 
     // drive.arcadeDrive(turnInput, speedInput);
+
+    collection.setCollecting(driver.getLeftTriggerAxis() > 0.5);
+
+    if (driver.getRightBumperPressed()) {
+      collection.setExtended(true);
+    } else if (driver.getLeftBumperPressed()) {
+      collection.setExtended(false);
+    }
   }
 
   /**
