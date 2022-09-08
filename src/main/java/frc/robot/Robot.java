@@ -59,9 +59,9 @@ public class Robot extends TimedRobot {
     System.out.print("Initializing drivetrain...");
     DriveModule leftModule = new DriveModule(new Talon(13), new Talon(3));
     DriveModule rightModule = new DriveModule(new Talon(1), new Talon(15));
-    collection = new Collection(new Talon(7), new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 2, 3));
-    drive = new Drivetrain(leftModule, rightModule, new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 1));
     compressor = new Compressor(1, PneumaticsModuleType.CTREPCM);
+    collection = new Collection(new Talon(7), new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 2, 3)); //2, 3
+    drive = new Drivetrain(leftModule, rightModule, new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 1)); //0, 1
     System.out.println("done");
 
     driver = new XboxController(0);
@@ -142,7 +142,7 @@ public class Robot extends TimedRobot {
 
     // drive.arcadeDrive(turnInput, speedInput);
 
-    collection.setCollecting(driver.getLeftTriggerAxis() > 0.5);
+    collection.setCollecting(driver.getYButton());
 
     if (driver.getRightBumperPressed()) {
       collection.setExtended(true);

@@ -1,6 +1,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.motorcontrol.Talon;
 
 public class Collection {
@@ -28,6 +29,8 @@ public class Collection {
      * @param extend true if extended, false if not.
      */
     public void setExtended(boolean extend) {
-        collecSol.set(extend ? DoubleSolenoid.Value.kForward : DoubleSolenoid.Value.kReverse);
+        
+        collecSol.set(extend ? Value.kForward : Value.kReverse);
+        //System.out.println(collecSol.get());
     }
 }
