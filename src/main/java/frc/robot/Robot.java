@@ -100,12 +100,13 @@ public class Robot extends TimedRobot {
     
     logger.collectHeaders();
     try {
-			logger.writeHeaders();
-		} catch (IOException io) {
-			io.printStackTrace();
-		}
+		logger.writeHeaders();
+    } catch (IOException io) {
+		io.printStackTrace();
+	}
+}
 
-		runTimer.schedule(logTimer, 0, 33);
+runTimer.schedule(logTimer, 0, 33);
   }
 
   /**
