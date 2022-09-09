@@ -104,9 +104,8 @@ public class Robot extends TimedRobot {
     } catch (IOException io) {
 		io.printStackTrace();
 	}
-}
 
-runTimer.schedule(logTimer, 0, 33);
+	runTimer.schedule(logTimer, 0, 33);
   }
 
   /**
