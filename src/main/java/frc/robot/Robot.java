@@ -7,6 +7,8 @@
 
 package frc.robot;
 
+import java.io.IOException;
+
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
@@ -15,8 +17,8 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 import frc.robot.Config;
+import frc.robot.logging.*;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -38,6 +40,10 @@ public class Robot extends TimedRobot {
 
   Compressor compressor;
 
+  Logger logger;
+
+  LoggableTimer timer;
+
   private static final double DEADBAND_LIMIT = 0.01;
   private static final double SPEED_CAP = 0.6;
   InputScaler joystickDeadband = new Deadband(DEADBAND_LIMIT);
@@ -47,7 +53,6 @@ public class Robot extends TimedRobot {
   public double deadband(double in) {
     double out = joystickSquared.scale(in);
     return joystickDeadband.scale(out);
-
   }
 
   /**
@@ -56,12 +61,22 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+    try {
+      logger.createLog();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    timer = new LoggableTimer("Time");
 
     System.out.print("Initializing drivetrain...");
     DriveModule leftModule = new DriveModule(new Talon(13), new Talon(3));
     DriveModule rightModule = new DriveModule(new Talon(1), new Talon(15));
-    compressor = new Compressor(1, PneumaticsModuleType.CTREPCM);
+
+    compressor = new LoggableCompressor(1, PneumaticsModuleType.CTREPCM);
+
     collection = new Collection(new Talon(7), new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 2, 3)); //2, 3
+
     drive = new Drivetrain(leftModule, rightModule, new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 1)); //0, 1
     System.out.println("done");
 
@@ -72,6 +87,10 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData("Auto choices", m_chooser);
 
     Config.loadFromFile("config.txt"); // It doesn't actually read from any file
+
+    logger.addLoggable((Loggable) compressor);
+    // logger.addLoggable((Loggable) leftModule); //TODO: Figure out what to log
+    // logger.addLoggable((Loggable) rightModule); //TODO: Figure out what to log
   }
 
   /**

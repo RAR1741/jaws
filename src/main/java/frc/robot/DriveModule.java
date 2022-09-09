@@ -22,5 +22,4 @@ public class DriveModule {
         master.set(input);
         slave.set(input);
     }
-
 }
