@@ -9,6 +9,7 @@ public class Drivetrain {
     private DriveModule left;
     private DriveModule right;
     private DoubleSolenoid pto;
+    public boolean engaged = false;
 
     Drivetrain(DriveModule left, DriveModule right, DoubleSolenoid pto) {
         this.left = left;
@@ -51,6 +52,7 @@ public class Drivetrain {
     }
 
     public void setPTO(boolean engaged) {
+        this.engaged = engaged;
         pto.set(engaged ? DoubleSolenoid.Value.kForward : DoubleSolenoid.Value.kReverse);
     }
 

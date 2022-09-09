@@ -47,6 +47,7 @@ public class Robot extends TimedRobot {
   public double deadband(double in) {
     double out = joystickSquared.scale(in);
     return joystickDeadband.scale(out);
+
   }
 
   /**
@@ -139,15 +140,16 @@ public class Robot extends TimedRobot {
     // speedInput = boost.scale(speedInput);
 
     drive.tankDrive(leftDrive, rightDrive);
+    if (driver.getXButtonPressed()) {
+      drive.setPTO(!drive.engaged);
+    }
 
     // drive.arcadeDrive(turnInput, speedInput);
 
     collection.setCollecting(driver.getYButton());
 
-    if (driver.getRightBumperPressed()) {
-      collection.setExtended(true);
-    } else if (driver.getLeftBumperPressed()) {
-      collection.setExtended(false);
+    if (driver.getLeftBumperPressed()) {
+      collection.setExtended(!collection.engaged);
     }
   }
 

@@ -8,6 +8,7 @@ public class Collection {
 
     private Talon spinWheel;
     private DoubleSolenoid collecSol;
+    public boolean engaged = false;
 
     Collection (Talon spinWheel, DoubleSolenoid collecSol) {
         this.spinWheel = spinWheel;
@@ -29,7 +30,7 @@ public class Collection {
      * @param extend true if extended, false if not.
      */
     public void setExtended(boolean extend) {
-        
+        engaged = extend;
         collecSol.set(extend ? Value.kForward : Value.kReverse);
         //System.out.println(collecSol.get());
     }
