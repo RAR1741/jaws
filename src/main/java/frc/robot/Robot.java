@@ -41,6 +41,8 @@ public class Robot extends TimedRobot {
   Compressor compressor;
 
   Logger logger;
+  LogTimer logTimer;
+  Timer runTimer;
 
   LoggableTimer timer;
 
@@ -68,6 +70,9 @@ public class Robot extends TimedRobot {
     }
 
     timer = new LoggableTimer("Time");
+    logger = new Logger();
+    logTimer = LogTimer(logger);
+    runTimer = new Timer();
 
     System.out.print("Initializing drivetrain...");
     DriveModule leftModule = new DriveModule(new Talon(13), new Talon(3));
@@ -89,8 +94,18 @@ public class Robot extends TimedRobot {
     Config.loadFromFile("config.txt"); // It doesn't actually read from any file
 
     logger.addLoggable((Loggable) compressor);
+    logger.addLoggable((Loggable) timer);
     // logger.addLoggable((Loggable) leftModule); //TODO: Figure out what to log
     // logger.addLoggable((Loggable) rightModule); //TODO: Figure out what to log
+    
+    logger.collectHeaders();
+    try {
+			logger.writeHeaders();
+		} catch (IOException io) {
+			io.printStackTrace();
+		}
+
+		runTimer.schedule(logTimer, 0, 33);
   }
 
   /**
