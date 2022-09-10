@@ -124,10 +124,6 @@ public class Robot extends TimedRobot {
 	  runTimer.schedule(logTimer, new Date(), 33);
   }
 
-  private LogTimer LogTimer(Logger logger2) {
-    return null;
-  }
-
   /**
    * This function is called every robot packet, no matter the mode. Use this for
    * items like diagnostics that you want ran during disabled, autonomous,
