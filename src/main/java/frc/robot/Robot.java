@@ -8,17 +8,22 @@
 package frc.robot;
 
 import java.io.IOException;
+import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
-import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Config;
-import frc.robot.logging.*;
+import frc.robot.logging.Loggable;
+import frc.robot.logging.LoggableCompressor;
+import frc.robot.logging.LoggableTimer;
+import frc.robot.logging.Logger;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -41,7 +46,7 @@ public class Robot extends TimedRobot {
   Compressor compressor;
 
   Logger logger;
-  LogTimer logTimer;
+  TimerTask logTimer;
   Timer runTimer;
 
   LoggableTimer timer;
@@ -63,16 +68,27 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+    timer = new LoggableTimer("Time");
+    logger = new Logger();
+    runTimer = new Timer();
+
+    logTimer = new TimerTask() {
+      @Override
+      public void run() {
+        logger.collectData();
+        try {
+          logger.writeData();
+        } catch (IOException io) {
+          io.printStackTrace();
+        }
+      }
+    };
+
     try {
       logger.createLog();
     } catch (IOException e) {
       e.printStackTrace();
     }
-
-    timer = new LoggableTimer("Time");
-    logger = new Logger();
-    logTimer = LogTimer(logger);
-    runTimer = new Timer();
 
     System.out.print("Initializing drivetrain...");
     DriveModule leftModule = new DriveModule(new Talon(13), new Talon(3));
@@ -95,17 +111,21 @@ public class Robot extends TimedRobot {
 
     logger.addLoggable((Loggable) compressor);
     logger.addLoggable((Loggable) timer);
-    // logger.addLoggable((Loggable) leftModule); //TODO: Figure out what to log
-    // logger.addLoggable((Loggable) rightModule); //TODO: Figure out what to log
+    // logger.addLoggable((Loggable) leftModule); // TODO: Figure out what to log
+    // logger.addLoggable((Loggable) rightModule); // TODO: Figure out what to log
     
     logger.collectHeaders();
     try {
-		logger.writeHeaders();
+		  logger.writeHeaders();
     } catch (IOException io) {
-		io.printStackTrace();
-	}
+		  io.printStackTrace();
+	  }
 
-	runTimer.schedule(logTimer, 0, 33);
+	  runTimer.schedule(logTimer, new Date(), 33);
+  }
+
+  private LogTimer LogTimer(Logger logger2) {
+    return null;
   }
 
   /**
@@ -118,8 +138,7 @@ public class Robot extends TimedRobot {
    * and SmartDashboard integrated updating.
    */
   @Override
-  public void robotPeriodic() {
-  }
+  public void robotPeriodic() {}
 
   /**
    * This autonomous (along with the chooser code above) shows how to select

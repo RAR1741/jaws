@@ -6,6 +6,7 @@
       "/LiveWindow/Ungrouped/Talon[15]": "Motor Controller",
       "/LiveWindow/Ungrouped/Talon[1]": "Motor Controller",
       "/LiveWindow/Ungrouped/Talon[3]": "Motor Controller",
+      "/LiveWindow/Ungrouped/Talon[7]": "Motor Controller",
       "/SmartDashboard/Auto choices": "String Chooser"
     }
   },
