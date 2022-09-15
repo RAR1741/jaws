@@ -41,11 +41,26 @@ public class CamShooter implements Runnable {
 	Notifier controlLoop;
 	Talon shooterMotorLeft;
 	Talon shooterMotorRight;
-	//CamMotors cam_outputter; ???
+	CamMotors cam_outputter;
 	Encoder shooterEncoder;
 	DigitalInput indexSensor;
 	DigitalOutput scopeToggle;
 	DigitalOutput scopeCycle;
+
+	public class CamMotors {
+		final Talon LEFT;
+		final Talon RIGHT;
+
+		public CamMotors(Talon left, Talon right) {
+			this.LEFT = left;
+			this.RIGHT = right;
+		}
+
+		public void PIDWrite(double out) {
+			LEFT.set(out);
+			RIGHT.set(out);
+		}
+	}
 
 	public CamShooter(int motorLeft, int motorRight, int encoderA, int encoderB, int indexInput, int scopeTogglePort, int scopeCyclePort, double period) {		
 		accessSemaphore = new ReentrantLock();
@@ -55,7 +70,7 @@ public class CamShooter implements Runnable {
 		final double GEAR_REDUCTION_RATIO = 2250.0 / 49.0;
 		shooterMotorLeft = new Talon(motorLeft);
 		shooterMotorRight = new Talon(motorRight);
-		//cam_outputter = new CamMotors(shooterMotorLeft, shooterMotorRight); Where did CamMotors go?
+		cam_outputter = new CamMotors(shooterMotorLeft, shooterMotorRight);
 		shooterEncoder = new Encoder(encoderA, encoderB, false, EncodingType.k4X);
 		indexSensor = new DigitalInput(indexInput);
 		scopeToggle = new DigitalOutput(scopeTogglePort);
@@ -353,7 +368,7 @@ public class CamShooter implements Runnable {
 				}
 
 				if (setPWMOutput) {
-					//cam_outputter->PIDWrite(PWMOutput); //seriously, why is the CamMotors class lost to time?
+					cam_outputter.PIDWrite(PWMOutput);
 				}
 
 			}
