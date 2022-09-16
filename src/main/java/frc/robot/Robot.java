@@ -132,8 +132,8 @@ public class Robot extends TimedRobot {
     // TODO before next test add in gearshift solenoid and temp for testing main arm
     // solenoid
 
-    double leftDrive = deadband(driver.getRightY());
-    double rightDrive = deadband(driver.getLeftY());
+    double leftDrive = deadband(driver.getLeftY());
+    double rightDrive = deadband(driver.getRightY());
 
     // Limit speed input to a lower percentage unless boost mode is on
     boost.setEnabled(driver.getLeftTriggerAxis() > 0.5);
@@ -150,6 +150,7 @@ public class Robot extends TimedRobot {
 
     if (driver.getLeftBumperPressed()) {
       collection.setExtended(!collection.engaged);
+
     }
   }
 
