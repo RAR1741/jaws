@@ -44,6 +44,8 @@ public class Robot extends TimedRobot {
   InputScaler joystickSquared = new SquaredInput(DEADBAND_LIMIT);
   BoostInput boost = new BoostInput(SPEED_CAP);
 
+  int motor = 0;
+
   public double deadband(double in) {
     double out = joystickSquared.scale(in);
     return joystickDeadband.scale(out);
@@ -58,8 +60,8 @@ public class Robot extends TimedRobot {
   public void robotInit() {
 
     System.out.print("Initializing drivetrain...");
-    DriveModule leftModule = new DriveModule(new Talon(13), new Talon(3));
-    DriveModule rightModule = new DriveModule(new Talon(1), new Talon(15));
+    DriveModule leftModule = new DriveModule(new Talon(3), new Talon(2));
+    DriveModule rightModule = new DriveModule(new Talon(1), new Talon(0));
     compressor = new Compressor(1, PneumaticsModuleType.CTREPCM);
     collection = new Collection(new Talon(7), new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 2, 3)); //2, 3
     drive = new Drivetrain(leftModule, rightModule, new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 1)); //0, 1
@@ -132,8 +134,8 @@ public class Robot extends TimedRobot {
     // TODO before next test add in gearshift solenoid and temp for testing main arm
     // solenoid
 
-    double leftDrive = deadband(driver.getRightY());
-    double rightDrive = deadband(driver.getLeftY());
+    double leftDrive = deadband(driver.getLeftY());
+    double rightDrive = deadband(driver.getRightY());
 
     // Limit speed input to a lower percentage unless boost mode is on
     boost.setEnabled(driver.getLeftTriggerAxis() > 0.5);
@@ -158,5 +160,6 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void testPeriodic() {
+
   }
 }
