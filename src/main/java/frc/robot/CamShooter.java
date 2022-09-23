@@ -387,17 +387,5 @@ public class CamShooter implements Runnable {
 		System.out.println("End of process()");
 	}
 
-	public void setPosition(double pos) {
-		//This was empty in the 2014 code and I thought that was funny
-	}
-
-	//I didn't feel like including these
-	//We have a logger, and I don't feel like working out debug()
-	/*public void logHeaders() {
-	}
-	public void log() {
-	}
-	public void debug() {
-	}*/
-
+	public void setPosition(double pos) {}
 }
