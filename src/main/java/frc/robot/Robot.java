@@ -152,6 +152,7 @@ public class Robot extends TimedRobot {
 
     if (driver.getLeftBumperPressed()) {
       collection.setExtended(!collection.engaged);
+
     }
   }
 
