@@ -288,7 +288,6 @@ public class CamShooter implements Runnable {
 							PIDEnable = true;
 							controlPID = true;
 						}
-
 						if (shooterEncoderDistance >= pointOfNoReturn) {
 							nextState = "firing";
 							System.out.println("OK, I guess we're firing now. Fine. Whatever."); //I thought this was funny
@@ -329,8 +328,7 @@ public class CamShooter implements Runnable {
 						if (!eject) {
 							PIDSetpoint = readyToFirePosition;
 							setSetpoint = true;
-							nextState = "reaming";
-
+							nextState = "rearming";
 						}
 						break;
 					case "testing":
@@ -386,17 +384,5 @@ public class CamShooter implements Runnable {
 		System.out.println("End of process()");
 	}
 
-	public void setPosition(double pos) {
-		//This was empty in the 2014 code and I thought that was funny
-	}
-
-	//I didn't feel like including these
-	//We have a logger, and I don't feel like working out debug()
-	/*public void logHeaders() {
-	}
-	public void log() {
-	}
-	public void debug() {
-	}*/
-
+	public void setPosition(double pos) {}
 }

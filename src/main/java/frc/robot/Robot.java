@@ -33,6 +33,7 @@ public class Robot extends TimedRobot {
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
   XboxController driver = null;
+  XboxController operator = null;
   Collection collection = null;
 
   Drivetrain drive = null;
@@ -71,6 +72,7 @@ public class Robot extends TimedRobot {
     System.out.println("done");
 
     driver = new XboxController(0);
+    operator = new XboxController(1);
 
     camShooter = new CamShooter(5, 4, 2, 3, 0, 8, 9, Config.getSetting("cam_loop_period", 0.004));
 
@@ -136,8 +138,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
 
-    // TODO before next test add in gearshift solenoid and temp for testing main arm
-    // solenoid
+    // TODO: before next test add in gearshift solenoid and temp for testing main arm solenoid
 
     double leftDrive = deadband(driver.getLeftY());
     double rightDrive = deadband(driver.getRightY());
@@ -157,8 +158,9 @@ public class Robot extends TimedRobot {
 
     if (driver.getLeftBumperPressed()) {
       collection.setExtended(!collection.engaged);
-
     }
+
+    camShooter.process(operator.getRightTriggerAxis() > 0, operator.getXButton(), operator.getBButton());
   }
 
   /**
