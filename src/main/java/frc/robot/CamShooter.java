@@ -77,7 +77,6 @@ public class CamShooter implements Runnable {
 		scopeCycle = new DigitalOutput(scopeCyclePort);
 
 		shooterEncoder.setDistancePerPulse(100.0 / (GEAR_REDUCTION_RATIO * LINES_PER_REV));
-		//ShooterEncoder->SetPIDSourceParameter(Encoder::kDistance); (trying to find java equivalent (so far I only see things working with PIDController))
 		shooterEncoder.reset();
 
 		//Found this in code:

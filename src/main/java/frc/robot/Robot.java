@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import frc.robot.Config;
+import frc.robot.CamShooter;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -38,6 +39,9 @@ public class Robot extends TimedRobot {
 
   Compressor compressor;
 
+  CamShooter camShooter;
+  boolean shooterEnabled; // TODO: Use this when setting up CamShooter
+
   private static final double DEADBAND_LIMIT = 0.01;
   private static final double SPEED_CAP = 0.6;
   InputScaler joystickDeadband = new Deadband(DEADBAND_LIMIT);
@@ -58,7 +62,6 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-
     System.out.print("Initializing drivetrain...");
     DriveModule leftModule = new DriveModule(new Talon(3), new Talon(2));
     DriveModule rightModule = new DriveModule(new Talon(1), new Talon(0));
@@ -68,6 +71,8 @@ public class Robot extends TimedRobot {
     System.out.println("done");
 
     driver = new XboxController(0);
+
+    camShooter = new CamShooter(5, 4, 2, 3, 0, 8, 9, Config.getSetting("cam_loop_period", 0.004));
 
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
