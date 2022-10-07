@@ -16,9 +16,6 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import frc.robot.Config;
-import frc.robot.CamShooter;
-
 /**
  * The VM is configured to automatically run this class, and to call the
  * functions corresponding to each mode, as described in the IterativeRobot
@@ -41,15 +38,13 @@ public class Robot extends TimedRobot {
   Compressor compressor;
 
   CamShooter camShooter;
-  boolean shooterEnabled; // TODO: Use this when setting up CamShooter
+  boolean shooterEnabled = true;
 
   private static final double DEADBAND_LIMIT = 0.01;
   private static final double SPEED_CAP = 0.6;
   InputScaler joystickDeadband = new Deadband(DEADBAND_LIMIT);
   InputScaler joystickSquared = new SquaredInput(DEADBAND_LIMIT);
   BoostInput boost = new BoostInput(SPEED_CAP);
-
-  int motor = 0;
 
   public double deadband(double in) {
     double out = joystickSquared.scale(in);
@@ -74,7 +69,9 @@ public class Robot extends TimedRobot {
     driver = new XboxController(0);
     operator = new XboxController(1);
 
-    camShooter = new CamShooter(5, 4, 2, 3, 0, 8, 9, Config.getSetting("cam_loop_period", 0.004));
+    if(shooterEnabled) {
+      camShooter = new CamShooter(5, 4, 2, 3, 0, 8, 9, Config.getSetting("cam_loop_period", 0.004));
+    }
 
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
@@ -160,7 +157,9 @@ public class Robot extends TimedRobot {
       collection.setExtended(!collection.engaged);
     }
 
-    camShooter.process(operator.getRightTriggerAxis() > 0, operator.getXButton(), operator.getBButton());
+    if(shooterEnabled) {
+      camShooter.process(operator.getRightTriggerAxis() > 0, operator.getXButton(), operator.getBButton());
+    }
   }
 
   /**
