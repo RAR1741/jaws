@@ -38,6 +38,7 @@ public class Robot extends TimedRobot {
   Compressor compressor;
 
   CamShooter camShooter;
+  boolean tankDriveEnabled = false;
   boolean shooterEnabled = true;
 
   private static final double DEADBAND_LIMIT = 0.01;
@@ -137,19 +138,24 @@ public class Robot extends TimedRobot {
 
     // TODO: before next test add in gearshift solenoid and temp for testing main arm solenoid
 
-    double leftDrive = deadband(driver.getLeftY());
-    double rightDrive = deadband(driver.getRightY());
+    if (tankDriveEnabled) {
+      double leftDrive = deadband(driver.getLeftY());
+      double rightDrive = deadband(driver.getRightY());
+
+      drive.tankDrive(leftDrive, rightDrive);
+    } else {
+      double speedInput = boost.scale(deadband(driver.getRightY()));
+      double turnInput = deadband(driver.getLeftX());
+
+      drive.arcadeDrive(turnInput, speedInput);
+    }
 
     // Limit speed input to a lower percentage unless boost mode is on
     boost.setEnabled(driver.getLeftTriggerAxis() > 0.5);
-    // speedInput = boost.scale(speedInput);
 
-    drive.tankDrive(leftDrive, rightDrive);
     if (driver.getXButtonPressed()) {
       drive.setPTO(!drive.engaged);
     }
-
-    // drive.arcadeDrive(turnInput, speedInput);
 
     collection.setCollecting(driver.getYButton());
 
