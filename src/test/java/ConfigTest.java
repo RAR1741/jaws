@@ -6,11 +6,11 @@ import org.junit.BeforeClass;
 import static org.junit.Assert.assertEquals;
 
 public class ConfigTest {
-    private static double CLOSE_ENOUGH = 0.01;
+    private static final double CLOSE_ENOUGH = 0.01;
 
     @BeforeClass
     public static void configSetup() {
-        Config.initSettings();
+        Config.loadFromFile();
     }
 
     @Test
@@ -37,7 +37,7 @@ public class ConfigTest {
     public void configLoadFromFile() {
         // This doesn't actually do anything
         // other than the default init right now
-        Config.loadFromFile("test_file.txt");
+        Config.loadFromFile();
 
         assertEquals(35, Config.getSetting("funnel_release_angle"), CLOSE_ENOUGH);
     }

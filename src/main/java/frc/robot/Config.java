@@ -11,11 +11,12 @@ public class Config {
     /**
      * Map holding a keyed list of all the settings.
      */
-    static Map<String, Double> mSettings = new HashMap<String, Double>();
+    static Map<String, Double> mSettings = new HashMap<>();
     static class ConfigValues {
         // I didn't feel like doing any file i/o stuff, so this is what you get.
         // BEGIN: config.txt circa Oct. 2022
         // im sorry for continuing to use this as a config file
+        @SuppressWarnings("unused")
         public static double
                 cam_p = 0.08,
                 cam_i = 0.00005,
@@ -63,12 +64,8 @@ public class Config {
         // END: config.txt
         // Close enough lol...
     }
-    public static void loadFromFile(String filename) {
-        // "backwards compatibility"
-        initSettings();
-    }
 
-    public static void initSettings() {
+    public static void loadFromFile() {
         Field[] values = ConfigValues.class.getFields();
 
         for (Field field : values) {
@@ -80,10 +77,6 @@ public class Config {
                 e.printStackTrace();
             }
         }
-    }
-
-    public static void dump() {
-        // TODO: I decided this wasn't really needed for now.
     }
 
     public static double getSetting(String name) {
