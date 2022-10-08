@@ -6,8 +6,8 @@ import edu.wpi.first.wpilibj.motorcontrol.Talon;
 
 public class Collection {
 
-    private Talon spinWheel;
-    private DoubleSolenoid collecSol;
+    private final Talon spinWheel;
+    private final DoubleSolenoid collecSol;
     public boolean engaged = false;
 
     Collection (Talon spinWheel, DoubleSolenoid collecSol) {

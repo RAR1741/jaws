@@ -47,7 +47,7 @@ public class CamShooter implements Runnable {
 	DigitalOutput scopeToggle;
 	DigitalOutput scopeCycle;
 
-	public class CamMotors {
+	public static class CamMotors {
 		final Talon LEFT;
 		final Talon RIGHT;
 
@@ -384,5 +384,7 @@ public class CamShooter implements Runnable {
 		System.out.println("End of process()");
 	}
 
-	public void setPosition(double pos) {}
+	public void setPosition(double pos) {
+
+	}
 }

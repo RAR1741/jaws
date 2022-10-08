@@ -4,8 +4,8 @@ import edu.wpi.first.wpilibj.motorcontrol.Talon;
 
 public class DriveModule {
 
-    private Talon master;
-    private Talon slave;
+    private final Talon master;
+    private final Talon slave;
 
     DriveModule(Talon master, Talon slave) {
         this.master = master;
