@@ -15,35 +15,28 @@ public class CamShooter implements Runnable {
 	private final double CAM_FIRE_TO_POSITION = Config.getSetting("cam_fire_to_position", 45);
 	private final double CAM_FIRE_POSITION_TOLERANCE = Config.getSetting("cam_fire_position_tolerance", 3);
 	private final double CAM_POINT_OF_NO_RETURN = Config.getSetting("cam_point_of_no_return", 58);
-	private final double CAM_SETPOINT_ERROR_LIMIT = Config.getSetting("cam_setpoint_error_limit", 25);
+	//private final double CAM_SETPOINT_ERROR_LIMIT = Config.getSetting("cam_setpoint_error_limit", 25);
 
 	boolean scopeToggleState = false;
-	double m_P;
-	double m_I;
-	double m_D;
-	double m_totalError;
-	double m_prevError;
-	double m_setpoint;
-	boolean m_pidEnabled;
-	double m_minimumInput;
-	double m_maximumInput;
-	double m_minimumOutput;
-	double m_maximumOutput;
-	String m_state;
+	double p, i, d;
+	double totalError, prevError;
+	double setpoint;
+	boolean pidEnabled;
+	final double minimumInput, maximumInput;
+	final double minimumOutput, maximumOutput;
+	String state;
 	boolean indexHasBeenSeen;
-	boolean m_enabled;
+	boolean enabled;
 	boolean shouldFire = false;
 	boolean shouldRearm = false;
 	boolean shouldEject = false;
 
-	Notifier controlLoop;
-	Talon shooterMotorLeft;
-	Talon shooterMotorRight;
-	CamMotors cam_outputter;
-	Encoder shooterEncoder;
-	DigitalInput indexSensor;
-	DigitalOutput scopeToggle;
-	DigitalOutput scopeCycle;
+	final Notifier controlLoop;
+	final Talon shooterMotorLeft, shooterMotorRight;
+	final CamMotors cam_outputter;
+	final Encoder shooterEncoder;
+	final DigitalInput indexSensor;
+	final DigitalOutput scopeToggle, scopeCycle;
 
 	public static class CamMotors {
 		final Talon LEFT;
@@ -75,73 +68,65 @@ public class CamShooter implements Runnable {
 		shooterEncoder.setDistancePerPulse(100.0 / (GEAR_REDUCTION_RATIO * LINES_PER_REV));
 		shooterEncoder.reset();
 
-		//Found this in code:
-		/*
-		PID = new PIDController(Config::GetSetting("cam_p", 0.04),
-											Config::GetSetting("cam_i", 0.005),
-											Config::GetSetting("cam_d", 0.03),
-											ShooterEncoder,
-											cam_outputter);
-		*/
 		setUpPID(Config.getSetting("cam_p", 0.04),
 				Config.getSetting("cam_i", 0.005),
 				Config.getSetting("cam_d", 0.03));
-		m_setpoint = 0;
+		setpoint = 0;
 		disablePID();
-		m_minimumInput = 0;
-		m_maximumInput = 100 + 10;
-		m_minimumOutput = -1;
-		m_maximumOutput = 1;
+		minimumInput = 0;
+		maximumInput = 100 + 10;
+		minimumOutput = -1;
+		maximumOutput = 1;
 
-		m_state = "homing";
+		state = "homing";
 
 		indexHasBeenSeen = false;
-		m_enabled = false;
+		enabled = false;
 		controlLoop.startPeriodic(period);
 	}
 
 	public void setUpPID(double p, double i, double d) {
-		m_P = p;
-		m_I = i;
-		m_D = d;
+		this.p = p;
+		this.i = i;
+		this.d = d;
 		resetPID();
 	}
 
 	public void resetPID() {
-		m_totalError = m_prevError = 0;
+		totalError = prevError = 0;
 	}
 
 	public void setPIDSetpoint(double setpoint) {
-		m_setpoint = setpoint;
+		this.setpoint = setpoint;
 	}
 
 	public double PIDCompute(double input) {
-		double m_error = m_setpoint - input;
-		double m_result = 0;
-		if (Math.abs(m_error) > (m_maximumInput - m_minimumInput) / 2) {
+		double m_error = setpoint - input;
+		double m_result;
+		if (Math.abs(m_error) > (maximumInput - minimumInput) / 2) {
 			if (m_error > 0) {
-				m_error = m_error - m_maximumInput + m_minimumInput;
+				m_error = m_error - maximumInput + minimumInput;
 			} else {
-				m_error = m_error + m_maximumInput - m_minimumInput;
+				m_error = m_error + maximumInput - minimumInput;
 			}
 		}
 
-		if (m_I != 0) {
-			double potentialIGain = (m_totalError + m_error) * m_I;
-			if (potentialIGain < m_maximumOutput) {
-				m_totalError = potentialIGain >m_minimumOutput ? m_totalError + m_error : m_minimumOutput / m_I;
+		if (i != 0) {
+			double potentialIGain = (totalError + m_error) * i;
+			if (potentialIGain < maximumOutput) {
+				totalError = potentialIGain > minimumOutput ? totalError + m_error : minimumOutput / i;
 			} else {
-				m_totalError = m_maximumOutput / m_I;
+				totalError = maximumOutput / i;
 			}
 		}
 		double m_F = 0; //"What is this anyway?"
-		m_result = m_P * m_error + m_I * m_totalError + m_D * (m_error - m_prevError) + m_setpoint * m_F;
-		m_prevError = m_error;
+		m_result = p * m_error + i * totalError + d * (m_error - prevError) + setpoint * m_F;
+		prevError = m_error;
 
-		if (m_result > m_maximumOutput) {
-			m_result = m_maximumOutput;
-		} else if (m_result < m_minimumOutput) {
-			m_result = m_minimumOutput;
+		if (m_result > maximumOutput) {
+			m_result = maximumOutput;
+		} else if (m_result < minimumOutput) {
+			m_result = minimumOutput;
 		}
 
 		return m_result;
@@ -149,35 +134,35 @@ public class CamShooter implements Runnable {
 
 	public void enable() {
 		synchronized(this) {
-			m_enabled = true;
+			enabled = true;
 		}
 	}
 
 	public boolean isEnabled() {
-		boolean enabled = false;
+		boolean enabled;
 		synchronized(this) {
-			enabled = m_enabled;
+			enabled = this.enabled;
 		}
-		return m_enabled; //TODO this is probably supposed to just be enabled, not m_enabled
+		return enabled;
 	}
 
 	public void disable() {
 		synchronized(this) {
-			m_enabled = false;
+			enabled = false;
 		}
 	}
 
 	public void enablePID() {
-		m_pidEnabled = true;
+		pidEnabled = true;
 	}
 
 	public void disablePID() {
-		m_pidEnabled = false;
+		pidEnabled = false;
 		resetPID();
 	}
 
 	public boolean indexTripped() {
-		boolean index_tripped = false;
+		boolean index_tripped;
 
 		synchronized(this) {
 			index_tripped = indexHasBeenSeen;
@@ -195,14 +180,14 @@ public class CamShooter implements Runnable {
 			setUpPID(Config.getSetting("cam_p", 0.04),
 					Config.getSetting("cam_i", 0.005),
 					Config.getSetting("cam_d", 0.03));
-			m_state = "homing";
+			state = "homing";
 			shooterEncoder.reset();
 			disablePID();
 		}
 	}
 
 	public double getPosition() {
-		double position = 0;
+		double position;
 
 		synchronized(this) {
 			position = shooterEncoder.get();
@@ -215,31 +200,31 @@ public class CamShooter implements Runnable {
 		scopeToggle.set(scopeToggleState);
 		scopeCycle.set(true);
 
-		boolean fire = false;
-		boolean rearm = false;
-		boolean eject = false;
-		boolean enabled = false;
+		boolean fire;
+		boolean rearm;
+		boolean eject;
+		boolean enabled;
 
 		double shooterEncoderDistance;
-		double PIDSetpoint = 0;
+		double PIDSetpoint;
 		boolean setSetpoint = false;
 		double PWMOutput = 0;
 		boolean setPWMOutput = false;
 
 		boolean resetEncoder = false;
 
-		boolean PIDEnable = false;
+		boolean PIDEnable;
 		boolean controlPID = false;
 
-		double homeSpeed = .1;
+		double homeSpeed;
 
-		boolean PIDOnTarget = false;
+		boolean PIDOnTarget;
 
-		double ejectPosition = 30;
-		double pointOfNoReturn = 0;
-		double readyToFirePosition = 0;
-		double fireToPosition = 0;
-		double camFirePositionTolerance = 0;
+		double ejectPosition;
+		double pointOfNoReturn;
+		double readyToFirePosition;
+		double fireToPosition;
+		double camFirePositionTolerance;
 
 		String nextState;
 
@@ -251,25 +236,25 @@ public class CamShooter implements Runnable {
 				pointOfNoReturn = CAM_POINT_OF_NO_RETURN;
 				fireToPosition = CAM_FIRE_TO_POSITION;
 				camFirePositionTolerance = CAM_FIRE_POSITION_TOLERANCE;
-			enabled = m_enabled;
+			enabled = this.enabled;
 			fire = shouldFire;
 			rearm = shouldRearm;
 			eject = shouldEject;
 			indexHasBeenSeen = indexSensor.get();
 
 			shooterEncoderDistance = shooterEncoder.getDistance();
-			PIDSetpoint = m_setpoint;
+			PIDSetpoint = setpoint;
 
-			PIDEnable = m_pidEnabled;
+			PIDEnable = pidEnabled;
 
-			PIDOnTarget = Math.abs(m_setpoint - shooterEncoderDistance) < camFirePositionTolerance;
+			PIDOnTarget = Math.abs(setpoint - shooterEncoderDistance) < camFirePositionTolerance;
 
-			nextState = m_state;
+			nextState = state;
 		}
 
 		if (enabled) {
 			synchronized(this) {
-				switch (m_state) {
+				switch (state) {
 					case "rearming":
 						if (PIDOnTarget) {
 							nextState = "readyToFire";
@@ -336,7 +321,7 @@ public class CamShooter implements Runnable {
 						break;
 				}
 
-				m_state = nextState;
+				state = nextState;
 
 				if (resetEncoder) {
 					shooterEncoder.reset();
