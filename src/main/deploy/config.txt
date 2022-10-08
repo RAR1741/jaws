@@ -22,8 +22,6 @@ auto_firing_distance = 96 #Distance from the goal that robot will be shooting fr
 auto_collection_delay = 1.0
 odometer_auto_speed = -.1
 
-xaxis_percent = 1
-
 intake_roller_speed = 1
 
 xaxis_percent = .75
