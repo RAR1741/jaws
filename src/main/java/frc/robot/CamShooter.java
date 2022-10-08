@@ -1,7 +1,6 @@
 package frc.robot;
 
 import java.lang.Math;
-import java.util.concurrent.locks.ReentrantLock;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DigitalOutput;
@@ -17,7 +16,6 @@ public class CamShooter implements Runnable {
 	private final double CAM_FIRE_POSITION_TOLERANCE = Config.getSetting("cam_fire_position_tolerance", 3);
 	private final double CAM_POINT_OF_NO_RETURN = Config.getSetting("cam_point_of_no_return", 58);
 	private final double CAM_SETPOINT_ERROR_LIMIT = Config.getSetting("cam_setpoint_error_limit", 25);
-	private final ReentrantLock accessSemaphore;
 
 	boolean scopeToggleState = false;
 	double m_P;
@@ -63,8 +61,6 @@ public class CamShooter implements Runnable {
 	}
 
 	public CamShooter(int motorLeft, int motorRight, int encoderA, int encoderB, int indexInput, int scopeTogglePort, int scopeCyclePort, double period) {
-		accessSemaphore = new ReentrantLock();
-		accessSemaphore.lock(); //I know, there is no try(){}finally{} following it; sue me
 		controlLoop = new Notifier(this);
 		final double LINES_PER_REV = 360;
 		final double GEAR_REDUCTION_RATIO = 2250.0 / 49.0;
@@ -152,21 +148,21 @@ public class CamShooter implements Runnable {
 	}
 
 	public void enable() {
-		synchronized(accessSemaphore) {
+		synchronized(this) {
 			m_enabled = true;
 		}
 	}
 
 	public boolean isEnabled() {
 		boolean enabled = false;
-		synchronized(accessSemaphore) {
+		synchronized(this) {
 			enabled = m_enabled;
 		}
 		return m_enabled; //TODO this is probably supposed to just be enabled, not m_enabled
 	}
 
 	public void disable() {
-		synchronized(accessSemaphore) {
+		synchronized(this) {
 			m_enabled = false;
 		}
 	}
@@ -183,7 +179,7 @@ public class CamShooter implements Runnable {
 	public boolean indexTripped() {
 		boolean index_tripped = false;
 
-		synchronized(accessSemaphore) {
+		synchronized(this) {
 			index_tripped = indexHasBeenSeen;
 		}
 		return index_tripped;
@@ -195,7 +191,7 @@ public class CamShooter implements Runnable {
 	}
 
 	public void reset() {
-		synchronized(accessSemaphore) {
+		synchronized(this) {
 			setUpPID(Config.getSetting("cam_p", 0.04),
 					Config.getSetting("cam_i", 0.005),
 					Config.getSetting("cam_d", 0.03));
@@ -208,7 +204,7 @@ public class CamShooter implements Runnable {
 	public double getPosition() {
 		double position = 0;
 
-		synchronized(accessSemaphore) {
+		synchronized(this) {
 			position = shooterEncoder.get();
 		}
 		return position;
@@ -247,14 +243,14 @@ public class CamShooter implements Runnable {
 
 		String nextState;
 
-		synchronized(accessSemaphore) {
+		synchronized(this) {
 			//The 2014 programmers wanted this out of the main loop at some point
-			homeSpeed = Config.getSetting("cam_home_speed", .5);
-			ejectPosition = Config.getSetting("CAM_EJECT_POSITION", 30);
-			readyToFirePosition = CAM_READY_TO_FIRE_POSITION;
-			pointOfNoReturn = CAM_POINT_OF_NO_RETURN;
-			fireToPosition = CAM_FIRE_TO_POSITION;
-			camFirePositionTolerance = CAM_FIRE_POSITION_TOLERANCE;
+				homeSpeed = Config.getSetting("cam_home_speed", .5);
+				ejectPosition = Config.getSetting("CAM_EJECT_POSITION", 30);
+				readyToFirePosition = CAM_READY_TO_FIRE_POSITION;
+				pointOfNoReturn = CAM_POINT_OF_NO_RETURN;
+				fireToPosition = CAM_FIRE_TO_POSITION;
+				camFirePositionTolerance = CAM_FIRE_POSITION_TOLERANCE;
 			enabled = m_enabled;
 			fire = shouldFire;
 			rearm = shouldRearm;
@@ -272,7 +268,7 @@ public class CamShooter implements Runnable {
 		}
 
 		if (enabled) {
-			synchronized(accessSemaphore) {
+			synchronized(this) {
 				switch (m_state) {
 					case "rearming":
 						if (PIDOnTarget) {
@@ -376,13 +372,11 @@ public class CamShooter implements Runnable {
 
 	public void process(boolean fire, boolean rearm, boolean eject) {
 		System.out.println("Start of process()");
-		synchronized(accessSemaphore) {
+		synchronized(this) {
 			shouldFire = fire;
 			shouldRearm = rearm;
 			shouldEject = eject;
 		}
 		System.out.println("End of process()");
 	}
-
-	public void setPosition(double pos) {}
 }
