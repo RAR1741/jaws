@@ -71,12 +71,11 @@ public class Config {
         for (Field field : values) {
             try {
                 mSettings.put(field.getName(), field.getDouble(ConfigValues.class));
-                System.out.println(Config.getSetting(field.getName()));
             } catch (IllegalArgumentException | IllegalAccessException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
+        System.out.println("Config loaded.");
     }
 
     public static double getSetting(String name) {

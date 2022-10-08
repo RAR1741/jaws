@@ -356,12 +356,10 @@ public class CamShooter implements Runnable {
 	}
 
 	public void process(boolean fire, boolean rearm, boolean eject) {
-		System.out.println("Start of process()");
 		synchronized(this) {
 			shouldFire = fire;
 			shouldRearm = rearm;
 			shouldEject = eject;
 		}
-		System.out.println("End of process()");
 	}
 }
