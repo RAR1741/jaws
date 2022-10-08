@@ -77,7 +77,7 @@ public class Robot extends TimedRobot {
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
 
-    Config.loadFromFile("config.txt"); // It doesn't actually read from any file
+    Config.loadFromFile(); // It doesn't actually read from any file
   }
 
   /**
