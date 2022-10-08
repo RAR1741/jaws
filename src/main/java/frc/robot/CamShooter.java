@@ -33,7 +33,7 @@ public class CamShooter implements Runnable {
 
 	final Notifier controlLoop;
 	final Talon shooterMotorLeft, shooterMotorRight;
-	final CamMotors cam_outputter;
+	final CamMotors camMotors;
 	final Encoder shooterEncoder;
 	final DigitalInput indexSensor;
 	final DigitalOutput scopeToggle, scopeCycle;
@@ -59,7 +59,7 @@ public class CamShooter implements Runnable {
 		final double GEAR_REDUCTION_RATIO = 2250.0 / 49.0;
 		shooterMotorLeft = new Talon(motorLeft);
 		shooterMotorRight = new Talon(motorRight);
-		cam_outputter = new CamMotors(shooterMotorLeft, shooterMotorRight);
+		camMotors = new CamMotors(shooterMotorLeft, shooterMotorRight);
 		shooterEncoder = new Encoder(encoderA, encoderB, false, EncodingType.k4X);
 		indexSensor = new DigitalInput(indexInput);
 		scopeToggle = new DigitalOutput(scopeTogglePort);
@@ -346,7 +346,7 @@ public class CamShooter implements Runnable {
 				}
 
 				if (setPWMOutput) {
-					cam_outputter.PIDWrite(PWMOutput);
+					camMotors.PIDWrite(PWMOutput);
 				}
 
 			}
