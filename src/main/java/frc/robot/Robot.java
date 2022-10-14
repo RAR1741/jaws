@@ -72,6 +72,7 @@ public class Robot extends TimedRobot {
 
     if(shooterEnabled) {
       camShooter = new CamShooter(5, 4, 2, 3, 0, 8, 9, Config.getSetting("cam_loop_period", 0.004));
+      camShooter.enable();
     }
 
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
@@ -171,6 +172,9 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void testPeriodic() {
+
+    System.out.println(camShooter.getPosition());
+    System.out.println(camShooter.indexTripped());
 
   }
 }

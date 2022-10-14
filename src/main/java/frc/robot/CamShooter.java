@@ -24,7 +24,7 @@ public class CamShooter implements Runnable {
 	boolean pidEnabled;
 	final double minimumInput, maximumInput;
 	final double minimumOutput, maximumOutput;
-	String state;
+	int state;
 	boolean indexHasBeenSeen;
 	boolean enabled;
 	boolean shouldFire = false;
@@ -78,7 +78,7 @@ public class CamShooter implements Runnable {
 		minimumOutput = -1;
 		maximumOutput = 1;
 
-		state = "homing";
+		state = 3;
 
 		indexHasBeenSeen = false;
 		enabled = false;
@@ -180,7 +180,7 @@ public class CamShooter implements Runnable {
 			setUpPID(Config.getSetting("cam_p", 0.04),
 					Config.getSetting("cam_i", 0.005),
 					Config.getSetting("cam_d", 0.03));
-			state = "homing";
+			state = 3;
 			shooterEncoder.reset();
 			disablePID();
 		}
@@ -226,7 +226,7 @@ public class CamShooter implements Runnable {
 		double fireToPosition;
 		double camFirePositionTolerance;
 
-		String nextState;
+		int nextState;
 
 		synchronized(this) {
 			//The 2014 programmers wanted this out of the main loop at some point
@@ -252,43 +252,45 @@ public class CamShooter implements Runnable {
 			nextState = state;
 		}
 
+ 
 		if (enabled) {
 			synchronized(this) {
+				System.out.println(state);
 				switch (state) {
-					case "rearming":
+					case 0: //rearming
 						if (PIDOnTarget) {
-							nextState = "readyToFire";
+							nextState = 1;
 						}
 						if (shooterEncoderDistance >= pointOfNoReturn) {
-							nextState = "firing";
+							nextState = 2;
 						}
 						break;
-					case "readyToFire":
+					case 1: //readyToFire
 						if (fire) {
-							nextState = "firing";
+							nextState = 2;
 							PIDEnable = true;
 							controlPID = true;
 						}
 						if (shooterEncoderDistance >= pointOfNoReturn) {
-							nextState = "firing";
+							nextState = 2;
 							System.out.println("OK, I guess we're firing now. Fine. Whatever."); //I thought this was funny
 						} else if (eject) {
 							setSetpoint = true;
 							PIDSetpoint = ejectPosition;
-							nextState = "ejecting";
+							nextState = 5;
 						}
 						break;
-					case "firing":
+					case 2: //firing
 						PIDSetpoint = fireToPosition;
 						setSetpoint = true;
 
 						if (PIDOnTarget && rearm) {
 							PIDEnable = false;
 							controlPID = true;
-							nextState = "homing";
+							nextState = 3;
 						}
 						break;
-					case "homing":
+					case 3: //homing
 						// Switch to voltage mode, drive to the index.
 						PWMOutput = homeSpeed;
 						setPWMOutput = true;
@@ -299,20 +301,20 @@ public class CamShooter implements Runnable {
 							controlPID = true;
 							PIDSetpoint = readyToFirePosition;
 							setSetpoint = true;
-							nextState = "rearming";
+							nextState = 0;
 						}
 						break;
-					case "calibration":
+					case 4: //calibration
 						// "this isn't used anymore" I kept this just in case
 						break;
-					case "ejecting":
+					case 5: //ejecting
 						if (!eject) {
 							PIDSetpoint = readyToFirePosition;
 							setSetpoint = true;
-							nextState = "rearming";
+							nextState = 0;
 						}
 						break;
-					case "testing":
+					case 6: //testing
 						PIDEnable = false;
 						controlPID = true;
 						break;
