@@ -45,6 +45,8 @@ public class CamShooter implements Runnable {
 		public CamMotors(Talon left, Talon right) {
 			this.LEFT = left;
 			this.RIGHT = right;
+
+			LEFT.setInverted(true);
 		}
 
 		public void PIDWrite(double out) {
