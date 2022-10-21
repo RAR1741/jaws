@@ -21,7 +21,7 @@ public class CamShooter implements Runnable {
 	double p, i, d;
 	double totalError, prevError;
 	double setpoint;
-	boolean pidEnabled;
+	boolean pidEnabled = false;
 	final double minimumInput, maximumInput;
 	final double minimumOutput, maximumOutput;
 	int state;
@@ -202,25 +202,25 @@ public class CamShooter implements Runnable {
 		scopeToggle.set(scopeToggleState);
 		scopeCycle.set(true);
 
-		boolean fire;
-		boolean rearm;
-		boolean eject;
-		boolean enabled;
+		boolean fire = false;
+		boolean rearm = false;
+		boolean eject = false;
+		boolean enabled = false;
 
 		double shooterEncoderDistance;
-		double PIDSetpoint;
+		double PIDSetpoint = 0;
 		boolean setSetpoint = false;
 		double PWMOutput = 0;
 		boolean setPWMOutput = false;
 
 		boolean resetEncoder = false;
 
-		boolean PIDEnable;
+		boolean PIDEnable = false;
 		boolean controlPID = false;
 
-		double homeSpeed;
+		double homeSpeed = 0.1;
 
-		boolean PIDOnTarget;
+		boolean PIDOnTarget = false;
 
 		double ejectPosition;
 		double pointOfNoReturn;
