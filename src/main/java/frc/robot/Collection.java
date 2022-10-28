@@ -21,7 +21,7 @@ public class Collection {
      * @param collect true if collecting, false if not.
      */
     public void setCollecting(boolean collect) {
-        spinWheel.set(collect ? -0.7 : 0);
+        spinWheel.set(collect ? -0.9 : 0); //-0.7
     }
 
     /**
