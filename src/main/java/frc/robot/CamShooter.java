@@ -218,10 +218,10 @@ public class CamShooter implements Runnable {
 		boolean PIDEnable = false;
 		boolean controlPID = false;
 
-		System.out.println("setSetpoint: " + setSetpoint);
+		/*System.out.println("setSetpoint: " + setSetpoint);
 		System.out.println("setPWMOutput: " + setPWMOutput);
 		System.out.println("PIDEnable: " + PIDEnable);
-		System.out.println("controlPID: " + controlPID);
+		System.out.println("controlPID: " + controlPID);*/
 
 		double homeSpeed = 0.1;
 
@@ -262,8 +262,7 @@ public class CamShooter implements Runnable {
  
 		if (enabled) {
 			synchronized(this) {
-				System.out.println(state);
-				System.out.println(shooterEncoderDistance);
+				System.out.println(state + ", " + shooterEncoderDistance);
 				switch (state) {
 					case 0: //rearming
 						if (PIDOnTarget) {
