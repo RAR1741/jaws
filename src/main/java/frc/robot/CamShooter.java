@@ -12,9 +12,6 @@ import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 import org.apache.logging.log4j.*;
 
 public class CamShooter implements Runnable {
-
-	private Logger camLogger = LogManager.getLogger(this.getClass().getName());
-
 	private final double CAM_READY_TO_FIRE_POSITION = Config.getSetting("cam_ready_to_fire_position", 35);
 	private final double CAM_FIRE_TO_POSITION = Config.getSetting("cam_fire_to_position", 45);
 	private final double CAM_FIRE_POSITION_TOLERANCE = Config.getSetting("cam_fire_position_tolerance", 3);
@@ -267,8 +264,8 @@ public class CamShooter implements Runnable {
 		if (enabled) {
 			synchronized(this) {
 				//camLogger.info(state + ", " + shooterEncoderDistance);
-				
-				camLogger.info("Hello!");
+
+				//camLogger.info("Hello!");
 				switch (state) {
 					case 0: //rearming
 						if (PIDOnTarget) {

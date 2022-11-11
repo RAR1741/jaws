@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.apache.logging.log4j.*;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -39,13 +40,15 @@ public class Robot extends TimedRobot {
 
   CamShooter camShooter;
   boolean tankDriveEnabled = false;
-  boolean shooterEnabled = true;
+  boolean shooterEnabled = false;
 
   private static final double DEADBAND_LIMIT = 0.01;
   private static final double SPEED_CAP = 0.6;
   InputScaler joystickDeadband = new Deadband(DEADBAND_LIMIT);
   InputScaler joystickSquared = new SquaredInput(DEADBAND_LIMIT);
   BoostInput boost = new BoostInput(SPEED_CAP);
+
+  private Logger Logger = LogManager.getLogger(this.getClass().getName());
 
   public double deadband(double in) {
     double out = joystickSquared.scale(in);
@@ -59,7 +62,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    System.setProperty("user.dir", "user.dir" + "/deploy");
+    
+    System.setProperty("user.dir", "/home/lvuser/deploy/");
     System.out.println(System.getProperty("user.dir"));
     System.out.print("Initializing drivetrain...");
     DriveModule leftModule = new DriveModule(new Talon(3), new Talon(2));
@@ -138,7 +142,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
-
+    Logger.info("Hello World!");
     if (tankDriveEnabled) {
       double leftDrive = deadband(driver.getLeftY());
       double rightDrive = deadband(driver.getRightY());
