@@ -59,6 +59,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+    System.setProperty("user.dir", "user.dir" + "/deploy");
+    System.out.println(System.getProperty("user.dir"));
     System.out.print("Initializing drivetrain...");
     DriveModule leftModule = new DriveModule(new Talon(3), new Talon(2));
     DriveModule rightModule = new DriveModule(new Talon(1), new Talon(0));

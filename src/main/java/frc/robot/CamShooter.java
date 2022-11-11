@@ -9,7 +9,11 @@ import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 
+import org.apache.logging.log4j.*;
+
 public class CamShooter implements Runnable {
+
+	private Logger camLogger = LogManager.getLogger(this.getClass().getName());
 
 	private final double CAM_READY_TO_FIRE_POSITION = Config.getSetting("cam_ready_to_fire_position", 35);
 	private final double CAM_FIRE_TO_POSITION = Config.getSetting("cam_fire_to_position", 45);
@@ -262,7 +266,9 @@ public class CamShooter implements Runnable {
  
 		if (enabled) {
 			synchronized(this) {
-				System.out.println(state + ", " + shooterEncoderDistance);
+				//camLogger.info(state + ", " + shooterEncoderDistance);
+				
+				camLogger.info("Hello!");
 				switch (state) {
 					case 0: //rearming
 						if (PIDOnTarget) {
