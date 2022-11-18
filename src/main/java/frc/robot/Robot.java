@@ -7,9 +7,6 @@
 
 package frc.robot;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
-
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
@@ -18,6 +15,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.apache.logging.log4j.*;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -42,14 +40,15 @@ public class Robot extends TimedRobot {
 
   CamShooter camShooter;
   boolean tankDriveEnabled = false;
-  boolean shooterEnabled = true;
+  boolean shooterEnabled = false;
 
   private static final double DEADBAND_LIMIT = 0.01;
   private static final double SPEED_CAP = 0.6;
   InputScaler joystickDeadband = new Deadband(DEADBAND_LIMIT);
   InputScaler joystickSquared = new SquaredInput(DEADBAND_LIMIT);
   BoostInput boost = new BoostInput(SPEED_CAP);
-  private BufferedWriter log;
+
+  private Logger Logger = LogManager.getLogger(this.getClass().getName());
 
   public double deadband(double in) {
     double out = joystickSquared.scale(in);
@@ -138,16 +137,12 @@ public class Robot extends TimedRobot {
     }
   }
 
-  @Override
-  public void teleopInit() {
-    log = camShooter.openLogger();
-  }
-
   /**
    * This function is called periodically during operator control.
    */
   @Override
   public void teleopPeriodic() {
+    Logger.info("Hello World!");
     if (tankDriveEnabled) {
       double leftDrive = deadband(driver.getLeftY());
       double rightDrive = deadband(driver.getRightY());
@@ -175,19 +170,6 @@ public class Robot extends TimedRobot {
 
     if(shooterEnabled) {
       camShooter.process(operator.getRightTriggerAxis() > 0, operator.getXButton(), operator.getBButton());
-      camShooter.debug(log);
-    }
-  }
-
-  @Override
-  public void disabledInit() {
-    if(log != null) {
-      try {
-        log.close();
-      } catch (IOException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      }
     }
   }
 

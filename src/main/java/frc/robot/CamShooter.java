@@ -1,11 +1,6 @@
 package frc.robot;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.lang.Math;
-import java.util.Calendar;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DigitalOutput;
@@ -14,6 +9,8 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.CounterBase.EncodingType;
+
+import org.apache.logging.log4j.*;
 
 public class CamShooter implements Runnable {
 	private final double CAM_READY_TO_FIRE_POSITION = Config.getSetting("cam_ready_to_fire_position", 35);
@@ -79,10 +76,9 @@ public class CamShooter implements Runnable {
 		shooterEncoder.setDistancePerPulse(100.0 / (GEAR_REDUCTION_RATIO * LINES_PER_REV));
 		shooterEncoder.reset();
 
-		setUpPID(0.08, 0.00005, 0.8);
-		//setUpPID(Config.getSetting("cam_p", 0.04),
-		//		Config.getSetting("cam_i", 0.005),
-		//		Config.getSetting("cam_d", 0.03));
+		setUpPID(Config.getSetting("cam_p", 0.04),
+				Config.getSetting("cam_i", 0.005),
+				Config.getSetting("cam_d", 0.03));
 		setpoint = 0;
 		disablePID();
 		minimumInput = 0;
@@ -292,7 +288,6 @@ public class CamShooter implements Runnable {
 				//camLogger.info(state + ", " + shooterEncoderDistance);
 
 				//camLogger.info("Hello!");
-				System.out.println("p: " + p + ", i: " + i + ", d: " + d);
 				switch (state) {
 					case 0: //rearming
 						if (PIDOnTarget) {
@@ -414,63 +409,6 @@ public class CamShooter implements Runnable {
 			shouldFire = fire;
 			shouldRearm = rearm;
 			shouldEject = eject;
-		}
-	}
-
-	public BufferedWriter openLogger() {
-        Calendar calendar = Calendar.getInstance();
-        String dir = "/home/lvuser/logs";
-        new File(dir).mkdirs();
-        if (new File("/media/sda").exists()) {
-            dir = "/media/sda";
-        }
-        String name = dir + "/log-" + calendar.get(Calendar.YEAR) + "-"
-                + calendar.get(Calendar.MONTH) + "-" + calendar.get(Calendar.DAY_OF_MONTH) + "_"
-                + calendar.get(Calendar.HOUR_OF_DAY) + "-" + calendar.get(Calendar.MINUTE) + "-"
-                + calendar.get(Calendar.SECOND) + ".csv";
-
-        System.out.printf("Logging to file: '%s'%n", new File(name).getAbsolutePath());
-        return this.openLogger(name);
-    }
-
-    /**
-     * Opens a file to log to.
-     *
-     * @param filepath Path of the file to open
-     * @return Whether opening the file succeeded
-     */
-    public BufferedWriter openLogger(String filepath) {
-		BufferedWriter log;
-        try {
-            log = new BufferedWriter(new FileWriter(filepath));
-			log.write("Encoder, Setpoint, Motor, Sensor, State,\n");
-        } catch (IOException e) {
-            return (BufferedWriter) null;
-        }
-        return log;
-    }
-
-	public void debug(BufferedWriter out) {
-		double distance, setpoint, left;
-		boolean index_tripped;
-		int state;
-		synchronized(this) {
-			setpoint = this.setpoint;
-			distance = shooterEncoder.getDistance();
-			index_tripped = indexHasBeenSeen;
-			left = shooterMotorLeft.get();
-			state = this.state;
-		}
-		try {
-			out.write(String.valueOf(distance) + ",");
-			out.write(String.valueOf(setpoint) + ",");
-			out.write(String.valueOf(left) + ",");
-			out.write((index_tripped ? "1" : "0") + ",");
-			out.write(String.valueOf(state) + ",\n");
-			out.flush();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 	}
 }
