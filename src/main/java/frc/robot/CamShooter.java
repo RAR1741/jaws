@@ -10,6 +10,7 @@ import java.util.Calendar;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.Notifier;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.CounterBase.EncodingType;
@@ -34,6 +35,10 @@ public class CamShooter implements Runnable {
 	boolean shouldFire = false;
 	boolean shouldRearm = false;
 	boolean shouldEject = false;
+
+	private BufferedWriter logOutput;
+	private Timer timer;
+	private StringBuilder sb;
 
 	final Notifier controlLoop;
 	final Talon shooterMotorLeft, shooterMotorRight;
@@ -89,7 +94,10 @@ public class CamShooter implements Runnable {
 
 		indexHasBeenSeen = false;
 		enabled = false;
+
+		timer = new Timer();
 		controlLoop.startPeriodic(period);
+		sb = new StringBuilder(100);
 	}
 
 	public void setUpPID(double p, double i, double d) {
@@ -142,6 +150,15 @@ public class CamShooter implements Runnable {
 	public void enable() {
 		synchronized(this) {
 			enabled = true;
+			try {
+				timer.reset();
+				logOutput = new BufferedWriter(new FileWriter("/home/lvuser/cam-shooter.csv"));
+				logOutput.write("time,state,encoder,setpoint");
+				logOutput.newLine();
+			} catch (IOException e) {
+				// Don't bother recovering this is test code
+				throw new RuntimeException("Problem opening log file in camshooter", e);
+			}
 		}
 	}
 
@@ -156,6 +173,11 @@ public class CamShooter implements Runnable {
 	public void disable() {
 		synchronized(this) {
 			enabled = false;
+			try {
+				logOutput.close();
+			} catch (IOException e) {
+				throw new RuntimeException("Problem with closing log file in camshooter", e);
+			}
 		}
 	}
 
@@ -365,7 +387,22 @@ public class CamShooter implements Runnable {
 				if (setPWMOutput) {
 					camMotors.PIDWrite(PWMOutput);
 				}
-
+				
+				try {
+					sb.setLength(0);
+					// time,state,encoder,setpoint
+					sb.append(timer.get());
+					sb.append(',');
+					sb.append(state);
+					sb.append(',');
+					sb.append(shooterEncoderDistance);
+					sb.append(',');
+					sb.append(PIDSetpoint);
+					logOutput.write(sb.toString());
+					logOutput.newLine();
+				} catch (IOException e) {
+					throw new RuntimeException("Exception thrown during inner loop in CamShooter", e);
+				}
 			}
 		}
 
