@@ -51,9 +51,6 @@ dependencies {
     implementation wpi.java.deps.wpilib()
     implementation wpi.java.vendor.java()
 
-    implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.19.0'
-    implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.19.0'
-
     roborioDebug wpi.java.deps.wpilibJniDebug(wpi.platforms.roborio)
     roborioDebug wpi.java.vendor.jniDebug(wpi.platforms.roborio)
 

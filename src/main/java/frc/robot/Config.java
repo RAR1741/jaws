@@ -18,9 +18,9 @@ public class Config {
         // im sorry for continuing to use this as a config file
         @SuppressWarnings("unused")
         public static double
-                cam_p = 0.08,
-                cam_i = 0.00005,
-                cam_d = 0.8,
+                cam_p = .1, //0.08
+                cam_i = 0, //0.00005
+                cam_d = 0, //0.8
 
                 robot_loop_period = .02,
 
