@@ -43,14 +43,12 @@ public class Robot extends TimedRobot {
   CamShooter camShooter;
   boolean tankDriveEnabled = false;
   boolean shooterEnabled = true;
-  boolean shooterLoggerEnabled = true;
 
   private static final double DEADBAND_LIMIT = 0.01;
   private static final double SPEED_CAP = 0.6;
   InputScaler joystickDeadband = new Deadband(DEADBAND_LIMIT);
   InputScaler joystickSquared = new SquaredInput(DEADBAND_LIMIT);
   BoostInput boost = new BoostInput(SPEED_CAP);
-  private BufferedWriter log;
 
   public double deadband(double in) {
     double out = joystickSquared.scale(in);
@@ -64,9 +62,9 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    
-    System.setProperty("user.dir", "/home/lvuser/deploy/");
-    System.out.println(System.getProperty("user.dir"));
+    System.out.println("Reading config file...");
+    Config.loadFromFile();
+    System.out.println("Done loading initial config");
     System.out.print("Initializing drivetrain...");
     DriveModule leftModule = new DriveModule(new Talon(3), new Talon(2));
     DriveModule rightModule = new DriveModule(new Talon(1), new Talon(0));
@@ -86,8 +84,6 @@ public class Robot extends TimedRobot {
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
-
-    Config.loadFromFile(); // It doesn't actually read from any file
   }
 
   /**
@@ -183,6 +179,13 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledInit() {
     camShooter.disable();
+    System.out.println("Reloading configuration from file...");
+    Config.loadFromFile();
+    System.out.println("Configuration loaded, dumping...");
+    Config.dump(System.out);
+    System.out.println("Reconfiguring shooter...");
+    camShooter.reconfigure();
+    System.out.println("Done reconfiguring shooter");
   }
 
   /**
