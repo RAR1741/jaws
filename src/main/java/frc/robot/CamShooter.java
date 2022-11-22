@@ -239,6 +239,11 @@ public class CamShooter implements Runnable {
 		pointOfNoReturn = Config.getSetting("cam_point_of_no_return", 58);
 		homeSpeed = Config.getSetting("cam_home_speed", .5);
 		ejectPosition = Config.getSetting("cam_eject_position", 30);
+
+		setUpPID(
+			Config.getSetting("cam_p", 0.08),
+			Config.getSetting("cam_i", 0.00005),
+			Config.getSetting("cam_d", 0.8));
 	}
 
 	public double getPosition() {
