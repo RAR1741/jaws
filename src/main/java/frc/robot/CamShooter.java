@@ -40,6 +40,7 @@ public class CamShooter implements Runnable {
 	private BufferedWriter logOutput;
 	private Timer timer;
 	private StringBuilder sb;
+	private double period;
 
 	final Notifier controlLoop;
 	final Talon shooterMotorLeft, shooterMotorRight;
@@ -67,6 +68,7 @@ public class CamShooter implements Runnable {
 
 	public CamShooter(int motorLeft, int motorRight, int encoderA, int encoderB, int indexInput, int scopeTogglePort, int scopeCyclePort, double period) {
 		controlLoop = new Notifier(this);
+		this.period = period;
 		final double LINES_PER_REV = 360;
 		final double GEAR_REDUCTION_RATIO = 2250.0 / 49.0;
 		shooterMotorLeft = new Talon(motorLeft);
@@ -97,7 +99,8 @@ public class CamShooter implements Runnable {
 		enabled = false;
 
 		timer = new Timer();
-		controlLoop.startPeriodic(period);
+		// Defer starting the control loop until we actually enable
+		//controlLoop.startPeriodic(period);
 		sb = new StringBuilder(200);
 	}
 
@@ -157,6 +160,9 @@ public class CamShooter implements Runnable {
 				logOutput = new BufferedWriter(new FileWriter(logPath));
 				logOutput.write("time,state,encoder,setpoint,state");
 				logOutput.newLine();
+				timer.start();
+
+				this.controlLoop.startPeriodic(this.period);
 			} catch (IOException e) {
 				// Don't bother recovering this is test code
 				throw new RuntimeException("Problem opening log file in camshooter", e);
@@ -175,6 +181,9 @@ public class CamShooter implements Runnable {
 	public void disable() {
 		synchronized(this) {
 			enabled = false;
+			this.controlLoop.stop();
+			timer.stop();
+
 			try {
 				logOutput.close();
 			} catch (IOException e) {
