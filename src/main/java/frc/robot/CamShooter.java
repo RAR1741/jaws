@@ -15,10 +15,13 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 
 public class CamShooter implements Runnable {
-	private final double CAM_READY_TO_FIRE_POSITION = Config.getSetting("cam_ready_to_fire_position", 35);
-	private final double CAM_FIRE_TO_POSITION = Config.getSetting("cam_fire_to_position", 45);
-	private final double CAM_FIRE_POSITION_TOLERANCE = Config.getSetting("cam_fire_position_tolerance", 3);
-	private final double CAM_POINT_OF_NO_RETURN = Config.getSetting("cam_point_of_no_return", 58);
+	private double readyToFirePosition = 35;
+	private double fireToPosition = 45;
+	private double pointOfNoReturn = 58;
+	private double ejectPosition = 30;
+	private double firePositionTolerance = 3;
+	private double homeSpeed = 0.1;
+
 	//private final double CAM_SETPOINT_ERROR_LIMIT = Config.getSetting("cam_setpoint_error_limit", 25);
 
 	boolean scopeToggleState = false;
@@ -223,6 +226,23 @@ public class CamShooter implements Runnable {
 		}
 	}
 
+	public void reconfigure() {
+		if (isEnabled()) {
+			throw new RuntimeException("This should only be called when disabled");
+		}
+		readyToFirePosition = Config.getSetting("cam_ready_to_fire_position", 35);
+		fireToPosition = Config.getSetting("cam_fire_to_position", 45);
+		firePositionTolerance = Config.getSetting("cam_fire_position_tolerance", 3);
+		pointOfNoReturn = Config.getSetting("cam_point_of_no_return", 58);
+		homeSpeed = Config.getSetting("cam_home_speed", .5);
+		ejectPosition = Config.getSetting("cam_eject_position", 30);
+
+		setUpPID(
+			Config.getSetting("cam_p", 0.08),
+			Config.getSetting("cam_i", 0.00005),
+			Config.getSetting("cam_d", 0.8));
+	}
+
 	public double getPosition() {
 		double position;
 
@@ -258,26 +278,11 @@ public class CamShooter implements Runnable {
 		System.out.println("PIDEnable: " + PIDEnable);
 		System.out.println("controlPID: " + controlPID);*/
 
-		double homeSpeed = 0.1;
-
 		boolean PIDOnTarget = false;
-
-		double ejectPosition;
-		double pointOfNoReturn;
-		double readyToFirePosition;
-		double fireToPosition;
-		double camFirePositionTolerance;
 
 		int nextState;
 
 		synchronized(this) {
-			//The 2014 programmers wanted this out of the main loop at some point
-				homeSpeed = Config.getSetting("cam_home_speed", .5);
-				ejectPosition = Config.getSetting("CAM_EJECT_POSITION", 30);
-				readyToFirePosition = CAM_READY_TO_FIRE_POSITION;
-				pointOfNoReturn = CAM_POINT_OF_NO_RETURN;
-				fireToPosition = CAM_FIRE_TO_POSITION;
-				camFirePositionTolerance = CAM_FIRE_POSITION_TOLERANCE;
 			enabled = this.enabled;
 			fire = shouldFire;
 			rearm = shouldRearm;
@@ -289,7 +294,7 @@ public class CamShooter implements Runnable {
 
 			PIDEnable = pidEnabled;
 
-			PIDOnTarget = Math.abs(setpoint - shooterEncoderDistance) < camFirePositionTolerance;
+			PIDOnTarget = Math.abs(setpoint - shooterEncoderDistance) < firePositionTolerance;
 
 			nextState = state;
 		}
@@ -300,6 +305,7 @@ public class CamShooter implements Runnable {
 				//camLogger.info(state + ", " + shooterEncoderDistance);
 
 				//camLogger.info("Hello!");
+				// System.out.println("p: " + p + ", i: " + i + ", d: " + d);
 				switch (state) {
 					case 0: //rearming
 						if (PIDOnTarget) {
@@ -425,61 +431,4 @@ public class CamShooter implements Runnable {
 			shouldEject = eject;
 		}
 	}
-
-	// public BufferedWriter openLogger() {
-  //       Calendar calendar = Calendar.getInstance();
-  //       String dir = "/home/lvuser/logs";
-  //       new File(dir).mkdirs();
-  //       if (new File("/media/sda").exists()) {
-  //           dir = "/media/sda";
-  //       }
-  //       String name = dir + "/log-" + calendar.get(Calendar.YEAR) + "-"
-  //               + calendar.get(Calendar.MONTH) + "-" + calendar.get(Calendar.DAY_OF_MONTH) + "_"
-  //               + calendar.get(Calendar.HOUR_OF_DAY) + "-" + calendar.get(Calendar.MINUTE) + "-"
-  //               + calendar.get(Calendar.SECOND) + ".csv";
-
-  //       System.out.printf("Logging to file: '%s'%n", new File(name).getAbsolutePath());
-  //       return this.openLogger(name);
-  //   }
-
-    // /**
-    //  * Opens a file to log to.
-    //  *
-    //  * @param filepath Path of the file to open
-    //  * @return Whether opening the file succeeded
-    //  */
-    // public BufferedWriter openLogger(String filepath) {
-		// 	BufferedWriter log;
-		// 	try {
-		// 			log = new BufferedWriter(new FileWriter(filepath));
-		// 			log.write("Encoder, Setpoint, Motor, Sensor, State,\n");
-		// 	} catch (IOException e) {
-		// 			return (BufferedWriter) null;
-		// 	}
-		// 	return log;
-    // }
-
-	// public void debug(BufferedWriter out) {
-	// 	double distance, setpoint, left;
-	// 	boolean index_tripped;
-	// 	int state;
-	// 	synchronized(this) {
-	// 		setpoint = this.setpoint;
-	// 		distance = shooterEncoder.getDistance();
-	// 		index_tripped = indexHasBeenSeen;
-	// 		left = shooterMotorLeft.get();
-	// 		state = this.state;
-	// 	}
-	// 	try {
-	// 		out.write(String.valueOf(distance) + ",");
-	// 		out.write(String.valueOf(setpoint) + ",");
-	// 		out.write(String.valueOf(left) + ",");
-	// 		out.write((index_tripped ? "1" : "0") + ",");
-	// 		out.write(String.valueOf(state) + ",\n");
-	// 		out.flush();
-	// 	} catch (IOException e) {
-	// 		// TODO Auto-generated catch block
-	// 		e.printStackTrace();
-	// 	}
-	// }
 }

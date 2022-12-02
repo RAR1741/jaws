@@ -14,23 +14,13 @@ public class ConfigTest {
     }
 
     @Test
-    public void test() {
-        assertEquals(1, 1);
-    }
-
-    @Test
     public void configGetSetting() {
-        //assertEquals(1, Config.getSetting("auto_delay"), CLOSE_ENOUGH);
+        assertEquals(Math.PI, Config.getSetting("test.value1", 0), CLOSE_ENOUGH);
     }
 
     @Test
-    public void configGetDefault() {
-        assertEquals(3600, Config.getSetting("auto_crash", 3600), CLOSE_ENOUGH);
-    }
-
-    @Test
-    public void configGetUnknownSetting() {
-        assertEquals(-0d, Config.getSetting("UNKNOWN_SETTING"), CLOSE_ENOUGH);
+    public void configGetSettingWithMissingSetting() {
+        assertEquals(30.0, Config.getSetting("test.value_does_not_exist", 30.0), CLOSE_ENOUGH);
     }
 
     @Test

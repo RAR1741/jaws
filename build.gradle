@@ -1,12 +1,20 @@
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.gradle.api.tasks.testing.logging.TestLogEvent
+
 plugins {
     id "java"
     id "edu.wpi.first.GradleRIO" version "2022.4.1"
+    id "jacoco"
 }
 
 sourceCompatibility = JavaVersion.VERSION_11
 targetCompatibility = JavaVersion.VERSION_11
 
 def ROBOT_MAIN_CLASS = "frc.robot.Main"
+
+repositories {
+    mavenCentral()
+}
 
 // Define my targets (RoboRIO) and artifacts (deployable files)
 // This is added by GradleRIO's backing project DeployUtils.
@@ -51,9 +59,6 @@ dependencies {
     implementation wpi.java.deps.wpilib()
     implementation wpi.java.vendor.java()
 
-    implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.19.0'
-    implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.19.0'
-
     roborioDebug wpi.java.deps.wpilibJniDebug(wpi.platforms.roborio)
     roborioDebug wpi.java.vendor.jniDebug(wpi.platforms.roborio)
 
@@ -69,6 +74,8 @@ dependencies {
     simulationRelease wpi.sim.enableRelease()
 
     testImplementation 'junit:junit:4.13.1'
+
+    implementation 'org.tomlj:tomlj:1.1.0'
 }
 
 // Simulation configuration (e.g. environment variables).
@@ -88,3 +95,49 @@ jar {
 deployArtifact.jarTask = jar
 wpi.java.configureExecutableTasks(jar)
 wpi.java.configureTestTasks(test)
+
+// See https://stackoverflow.com/questions/3963708/gradle-how-to-display-test-results-in-the-console-in-real-time
+tasks.withType(Test) {
+    testLogging {
+        // set options for log level LIFECYCLE
+        events TestLogEvent.FAILED,
+               TestLogEvent.PASSED,
+               TestLogEvent.SKIPPED,
+               TestLogEvent.STANDARD_OUT
+        exceptionFormat TestExceptionFormat.FULL
+        showExceptions true
+        showCauses true
+        showStackTraces true
+
+        // set options for log level DEBUG and INFO
+        debug {
+            events TestLogEvent.STARTED,
+                   TestLogEvent.FAILED,
+                   TestLogEvent.PASSED,
+                   TestLogEvent.SKIPPED,
+                   TestLogEvent.STANDARD_ERROR,
+                   TestLogEvent.STANDARD_OUT
+            exceptionFormat TestExceptionFormat.FULL
+        }
+        info.events = debug.events
+        info.exceptionFormat = debug.exceptionFormat
+
+        afterSuite { desc, result ->
+            if (!desc.parent) { // will match the outermost suite
+                def output = "Results: ${result.resultType} (${result.testCount} tests, ${result.successfulTestCount} passed, ${result.failedTestCount} failed, ${result.skippedTestCount} skipped)"
+                def startItem = '|  ', endItem = '  |'
+                def repeatLength = startItem.length() + output.length() + endItem.length()
+                println('\n' + ('-' * repeatLength) + '\n' + startItem + output + endItem + '\n' + ('-' * repeatLength))
+            }
+        }
+    }
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        html.enabled true
+    }
+}
+
+check.dependsOn jacocoTestReport
