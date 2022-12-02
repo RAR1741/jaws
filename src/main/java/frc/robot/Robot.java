@@ -40,7 +40,8 @@ public class Robot extends TimedRobot {
 
   CamShooter camShooter;
   boolean tankDriveEnabled = false;
-  boolean shooterEnabled = false;
+  boolean shooterEnabled = true;
+  boolean shooterLoggerEnabled = true;
 
   private static final double DEADBAND_LIMIT = 0.01;
   private static final double SPEED_CAP = 0.6;
@@ -137,6 +138,11 @@ public class Robot extends TimedRobot {
     }
   }
 
+  @Override
+  public void teleopInit() {
+    camShooter.enable();
+  }
+
   /**
    * This function is called periodically during operator control.
    */
@@ -170,7 +176,13 @@ public class Robot extends TimedRobot {
 
     if(shooterEnabled) {
       camShooter.process(operator.getRightTriggerAxis() > 0, operator.getXButton(), operator.getBButton());
+      // camShooter.debug(log);
     }
+  }
+
+  @Override
+  public void disabledInit() {
+    camShooter.disable();
   }
 
   /**
