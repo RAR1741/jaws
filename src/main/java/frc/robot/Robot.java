@@ -134,6 +134,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
+    // collection.setExtended(true);
     camShooter.enable();
   }
 
@@ -149,8 +150,8 @@ public class Robot extends TimedRobot {
 
       drive.tankDrive(leftDrive, rightDrive);
     } else {
-      double speedInput = boost.scale(deadband(driver.getRightY()));
-      double turnInput = deadband(driver.getLeftX());
+      double speedInput = boost.scale(deadband(driver.getLeftY()));
+      double turnInput = deadband(driver.getRightX());
 
       drive.arcadeDrive(turnInput, speedInput);
     }
@@ -166,6 +167,11 @@ public class Robot extends TimedRobot {
 
     if (driver.getLeftBumperPressed()) {
       collection.setExtended(!collection.engaged);
+    }
+
+    if(operator.getBButton()) {
+      //collection.setExtended(false);
+      collection.setEjecting(true);
     }
 
     if(shooterEnabled) {
@@ -191,6 +197,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void testPeriodic() {
+
+    collection.setExtended(true);
 
     System.out.println(camShooter.getPosition());
     System.out.println(camShooter.indexTripped());

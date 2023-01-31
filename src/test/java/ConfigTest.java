@@ -1,14 +1,14 @@
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
 import frc.robot.Config;
-
-import org.junit.Test;
-import org.junit.BeforeClass;
-
-import static org.junit.Assert.assertEquals;
 
 public class ConfigTest {
     private static final double CLOSE_ENOUGH = 0.01;
 
-    @BeforeClass
+    @BeforeAll
     public static void configSetup() {
         Config.loadFromFile();
     }

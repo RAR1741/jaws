@@ -8,7 +8,7 @@ public class Collection {
 
     private final Talon spinWheel;
     private final DoubleSolenoid collecSol;
-    public boolean engaged = false;
+    public boolean engaged = true;
 
     Collection (Talon spinWheel, DoubleSolenoid collecSol) {
         this.spinWheel = spinWheel;
@@ -33,5 +33,9 @@ public class Collection {
         engaged = extend;
         collecSol.set(extend ? Value.kForward : Value.kReverse);
         //System.out.println(collecSol.get());
+    }
+
+    public void setEjecting(boolean eject) {
+        spinWheel.set(eject ? 0.9 : 0);
     }
 }
