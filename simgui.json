@@ -1,0 +1,28 @@
+{
+  "NTProvider": {
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/LiveWindow/Ungrouped/DigitalInput[0]": "Digital Input",
+      "/LiveWindow/Ungrouped/DigitalOutput[8]": "Digital Output",
+      "/LiveWindow/Ungrouped/DigitalOutput[9]": "Digital Output",
+      "/LiveWindow/Ungrouped/Talon[0]": "Motor Controller",
+      "/LiveWindow/Ungrouped/Talon[13]": "Motor Controller",
+      "/LiveWindow/Ungrouped/Talon[15]": "Motor Controller",
+      "/LiveWindow/Ungrouped/Talon[1]": "Motor Controller",
+      "/LiveWindow/Ungrouped/Talon[2]": "Motor Controller",
+      "/LiveWindow/Ungrouped/Talon[3]": "Motor Controller",
+      "/LiveWindow/Ungrouped/Talon[4]": "Motor Controller",
+      "/LiveWindow/Ungrouped/Talon[5]": "Motor Controller",
+      "/LiveWindow/Ungrouped/Talon[7]": "Motor Controller",
+      "/SmartDashboard/Auto choices": "String Chooser"
+    }
+  },
+  "NetworkTables": {
+    "SmartDashboard": {
+      "Auto choices": {
+        "open": true
+      },
+      "open": true
+    }
+  }
+}

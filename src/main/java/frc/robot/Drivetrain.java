@@ -6,9 +6,10 @@ public class Drivetrain {
 
     private static final double DEADBAND_LIMIT = 0.02;
 
-    private DriveModule left;
-    private DriveModule right;
-    private DoubleSolenoid pto;
+    private final DriveModule left;
+    private final DriveModule right;
+    private final DoubleSolenoid pto;
+    public boolean engaged = false;
 
     Drivetrain(DriveModule left, DriveModule right, DoubleSolenoid pto) {
         this.left = left;
@@ -51,15 +52,16 @@ public class Drivetrain {
     }
 
     public void setPTO(boolean engaged) {
+        this.engaged = engaged;
         pto.set(engaged ? DoubleSolenoid.Value.kForward : DoubleSolenoid.Value.kReverse);
     }
 
     /**
      * Drives the robot with an arcade style drive
      *
-     * @param xDrive The speed to drive the drivetrain in the x direction (ranges
+     * @param turnInput The speed to drive the drivetrain in the x direction (ranges
      *               from -1.0 to +1.0)
-     * @param yDrive The speed to drive the drivetrain in the y direction (ranges
+     * @param speedInput The speed to drive the drivetrain in the y direction (ranges
      *               from -1.0 to +1.0)
      */
     public void arcadeDrive(double turnInput, double speedInput) {
@@ -68,11 +70,11 @@ public class Drivetrain {
     }
 
     /**
-     * Drives the robot with an tank style drive
+     * Drives the robot with a tank style drive
      *
-     * @param xDrive The speed to drive the left drivetrain (ranges from -1.0 to
+     * @param leftDrive The speed to drive the left drivetrain (ranges from -1.0 to
      *               +1.0)
-     * @param yDrive The speed to drive the right drivetrain (ranges from -1.0 to
+     * @param rightDrive The speed to drive the right drivetrain (ranges from -1.0 to
      *               +1.0)
      */
     public void tankDrive(double leftDrive, double rightDrive) {

@@ -1,0 +1,46 @@
+# DO NOT USE THIS
+# Use config.toml instead.
+
+cam_p = 0.08
+cam_i = 0.00005
+cam_d = 0.8
+
+robot_loop_period = .02
+
+cam_loop_period = 0.004
+robot_cam_rearm_rate = 25
+
+cam_ready_to_fire_position = 54
+cam_fire_to_position = 63
+cam_point_of_no_return = 58
+
+cam_fire_position_tolerance = 3
+cam_setpoint_error_limit = 25
+cam_home_speed = .6
+cam_home_speed_slow = .25
+cam_home_speed_cutoff = 50
+cam_eject_position = 21
+
+auto_firing_distance = 96 #Distance from the goal that robot will be shooting from in inches
+auto_collection_delay = 1.0
+odometer_auto_speed = -.1
+
+intake_roller_speed = 1
+
+xaxis_percent = .75
+
+target_r = 55
+target_g = 231
+target_b = 221
+
+target_r_down_limit = 0
+target_r_up_limit = 60 
+
+target_g_down_limit = 200
+target_g_up_limit = 255
+
+target_b_down_limit = 200
+target_b_up_limit = 255
+
+drive_encoderlines = 250
+drive_max_speed = 5000

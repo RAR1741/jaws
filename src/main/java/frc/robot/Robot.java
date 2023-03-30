@@ -7,15 +7,14 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.Talon;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
-import frc.robot.Config;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -31,7 +30,16 @@ public class Robot extends TimedRobot {
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
   XboxController driver = null;
+  XboxController operator = null;
+  Collection collection = null;
+
   Drivetrain drive = null;
+
+  Compressor compressor;
+
+  CamShooter camShooter;
+  boolean tankDriveEnabled = false;
+  boolean shooterEnabled = true;
 
   private static final double DEADBAND_LIMIT = 0.01;
   private static final double SPEED_CAP = 0.6;
@@ -42,6 +50,7 @@ public class Robot extends TimedRobot {
   public double deadband(double in) {
     double out = joystickSquared.scale(in);
     return joystickDeadband.scale(out);
+
   }
 
   /**
@@ -50,20 +59,28 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-
+    System.out.println("Reading config file...");
+    Config.loadFromFile();
+    System.out.println("Done loading initial config");
     System.out.print("Initializing drivetrain...");
-    DriveModule leftModule = new DriveModule(new Talon(13), new Talon(3));
-    DriveModule rightModule = new DriveModule(new Talon(1), new Talon(15));
-    drive = new Drivetrain(leftModule, rightModule, new DoubleSolenoid(0, 1));
+    DriveModule leftModule = new DriveModule(new Talon(3), new Talon(2));
+    DriveModule rightModule = new DriveModule(new Talon(1), new Talon(0));
+    compressor = new Compressor(1, PneumaticsModuleType.CTREPCM);
+    collection = new Collection(new Talon(7), new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 2, 3)); //2, 3
+    drive = new Drivetrain(leftModule, rightModule, new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 1)); //0, 1
     System.out.println("done");
 
     driver = new XboxController(0);
+    operator = new XboxController(1);
+
+    if(shooterEnabled) {
+      camShooter = new CamShooter(5, 4, 2, 3, 0, 8, 9, Config.getSetting("cam_loop_period", 0.004));
+      camShooter.enable();
+    }
 
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
-
-    Config.loadFromFile("config.txt"); // It doesn't actually read from any file
   }
 
   /**
@@ -83,7 +100,7 @@ public class Robot extends TimedRobot {
    * This autonomous (along with the chooser code above) shows how to select
    * between different autonomous modes using the dashboard. The sendable chooser
    * code works with the Java SmartDashboard. If you prefer the LabVIEW Dashboard,
-   * remove all of the chooser code and uncomment the getString line to get the
+   * remove all the chooser code and uncomment the getString line to get the
    * auto name from the text box below the Gyro
    *
    * <p>
@@ -115,25 +132,64 @@ public class Robot extends TimedRobot {
     }
   }
 
+  @Override
+  public void teleopInit() {
+    // collection.setExtended(true);
+    camShooter.enable();
+  }
+
   /**
    * This function is called periodically during operator control.
    */
   @Override
   public void teleopPeriodic() {
+    //Logger.info("Hello World!");
+    if (tankDriveEnabled) {
+      double leftDrive = deadband(driver.getLeftY());
+      double rightDrive = deadband(driver.getRightY());
 
-    // TODO before next test add in gearshift solenoid and temp for testing main arm
-    // solenoid
+      drive.tankDrive(leftDrive, rightDrive);
+    } else {
+      double speedInput = boost.scale(deadband(driver.getLeftY()));
+      double turnInput = deadband(driver.getRightX());
 
-    double leftDrive = -deadband(driver.getY(Hand.kRight));
-    double rightDrive = deadband(driver.getY(Hand.kLeft));
+      drive.arcadeDrive(turnInput, speedInput);
+    }
 
     // Limit speed input to a lower percentage unless boost mode is on
-    boost.setEnabled(driver.getTriggerAxis(Hand.kLeft) > 0.5);
-    // speedInput = boost.scale(speedInput);
+    boost.setEnabled(driver.getLeftTriggerAxis() > 0.5);
 
-    drive.tankDrive(leftDrive, rightDrive);
+    if (driver.getXButtonPressed()) {
+      drive.setPTO(!drive.engaged);
+    }
 
-    // drive.arcadeDrive(turnInput, speedInput);
+    collection.setCollecting(driver.getYButton());
+
+    if (driver.getLeftBumperPressed()) {
+      collection.setExtended(!collection.engaged);
+    }
+
+    if(operator.getBButton()) {
+      //collection.setExtended(false);
+      collection.setEjecting(true);
+    }
+
+    if(shooterEnabled) {
+      camShooter.process(operator.getRightTriggerAxis() > 0, operator.getXButton(), operator.getBButton());
+      // camShooter.debug(log);
+    }
+  }
+
+  @Override
+  public void disabledInit() {
+    camShooter.disable();
+    System.out.println("Reloading configuration from file...");
+    Config.loadFromFile();
+    System.out.println("Configuration loaded, dumping...");
+    Config.dump(System.out);
+    System.out.println("Reconfiguring shooter...");
+    camShooter.reconfigure();
+    System.out.println("Done reconfiguring shooter");
   }
 
   /**
@@ -141,5 +197,11 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void testPeriodic() {
+
+    collection.setExtended(true);
+
+    System.out.println(camShooter.getPosition());
+    System.out.println(camShooter.indexTripped());
+
   }
 }
