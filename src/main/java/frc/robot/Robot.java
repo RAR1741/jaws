@@ -29,6 +29,12 @@ public class Robot extends TimedRobot {
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
+  // The mere instantiation of this object will cause the compressor to start
+  // running. We don't need to do anything else with it, so we'll suppress the
+  // warning.
+  @SuppressWarnings("unused")
+  private final Logger m_logger = Logger.getInstance();
+
   XboxController driver = null;
   XboxController operator = null;
   Collection collection = null;
@@ -39,7 +45,7 @@ public class Robot extends TimedRobot {
 
   CamShooter camShooter;
   boolean tankDriveEnabled = false;
-  boolean shooterEnabled = true;
+  boolean shooterEnabled = false;
 
   private static final double DEADBAND_LIMIT = 0.01;
   private static final double SPEED_CAP = 0.6;
@@ -66,14 +72,14 @@ public class Robot extends TimedRobot {
     DriveModule leftModule = new DriveModule(new Talon(3), new Talon(2));
     DriveModule rightModule = new DriveModule(new Talon(1), new Talon(0));
     compressor = new Compressor(1, PneumaticsModuleType.CTREPCM);
-    collection = new Collection(new Talon(7), new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 2, 3)); //2, 3
-    drive = new Drivetrain(leftModule, rightModule, new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 1)); //0, 1
+    collection = new Collection(new Talon(7), new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 2, 3)); // 2, 3
+    drive = new Drivetrain(leftModule, rightModule, new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 1)); // 0, 1
     System.out.println("done");
 
     driver = new XboxController(0);
     operator = new XboxController(1);
 
-    if(shooterEnabled) {
+    if (shooterEnabled) {
       camShooter = new CamShooter(5, 4, 2, 3, 0, 8, 9, Config.getSetting("cam_loop_period", 0.004));
       camShooter.enable();
     }
@@ -135,7 +141,9 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     // collection.setExtended(true);
-    camShooter.enable();
+    if (shooterEnabled) {
+      camShooter.enable();
+    }
   }
 
   /**
@@ -143,7 +151,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
-    //Logger.info("Hello World!");
+    // Logger.info("Hello World!");
     if (tankDriveEnabled) {
       double leftDrive = deadband(driver.getLeftY());
       double rightDrive = deadband(driver.getRightY());
@@ -169,12 +177,12 @@ public class Robot extends TimedRobot {
       collection.setExtended(!collection.engaged);
     }
 
-    if(operator.getBButton()) {
-      //collection.setExtended(false);
+    if (operator.getBButton()) {
+      // collection.setExtended(false);
       collection.setEjecting(true);
     }
 
-    if(shooterEnabled) {
+    if (shooterEnabled) {
       camShooter.process(operator.getRightTriggerAxis() > 0, operator.getXButton(), operator.getBButton());
       // camShooter.debug(log);
     }
@@ -182,14 +190,17 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledInit() {
-    camShooter.disable();
+    if (shooterEnabled) {
+      camShooter.disable();
+      System.out.println("Reconfiguring shooter...");
+      camShooter.reconfigure();
+      System.out.println("Done reconfiguring shooter");
+    }
     System.out.println("Reloading configuration from file...");
     Config.loadFromFile();
     System.out.println("Configuration loaded, dumping...");
     Config.dump(System.out);
-    System.out.println("Reconfiguring shooter...");
-    camShooter.reconfigure();
-    System.out.println("Done reconfiguring shooter");
+
   }
 
   /**
@@ -200,8 +211,10 @@ public class Robot extends TimedRobot {
 
     collection.setExtended(true);
 
-    System.out.println(camShooter.getPosition());
-    System.out.println(camShooter.indexTripped());
+    if (shooterEnabled) {
+      System.out.println(camShooter.getPosition());
+      System.out.println(camShooter.indexTripped());
+    }
 
   }
 }

@@ -27,6 +27,8 @@ public class Drivetrain {
     public void driveLeft(double speed) {
         double sp = deadband(speed);
         left.set(sp);
+
+        Logger.addEntry("Drivetrain/Left/Speed", sp);
     }
 
     /**
@@ -37,6 +39,8 @@ public class Drivetrain {
     public void driveRight(double speed) {
         double sp = deadband(speed);
         right.set(sp);
+
+        Logger.addEntry("Drivetrain/Right/Speed", sp);
     }
 
     /**
@@ -59,10 +63,12 @@ public class Drivetrain {
     /**
      * Drives the robot with an arcade style drive
      *
-     * @param turnInput The speed to drive the drivetrain in the x direction (ranges
-     *               from -1.0 to +1.0)
-     * @param speedInput The speed to drive the drivetrain in the y direction (ranges
-     *               from -1.0 to +1.0)
+     * @param turnInput  The speed to drive the drivetrain in the x direction
+     *                   (ranges
+     *                   from -1.0 to +1.0)
+     * @param speedInput The speed to drive the drivetrain in the y direction
+     *                   (ranges
+     *                   from -1.0 to +1.0)
      */
     public void arcadeDrive(double turnInput, double speedInput) {
         this.driveLeft(speedInput - turnInput);
@@ -72,10 +78,11 @@ public class Drivetrain {
     /**
      * Drives the robot with a tank style drive
      *
-     * @param leftDrive The speed to drive the left drivetrain (ranges from -1.0 to
-     *               +1.0)
-     * @param rightDrive The speed to drive the right drivetrain (ranges from -1.0 to
-     *               +1.0)
+     * @param leftDrive  The speed to drive the left drivetrain (ranges from -1.0 to
+     *                   +1.0)
+     * @param rightDrive The speed to drive the right drivetrain (ranges from -1.0
+     *                   to
+     *                   +1.0)
      */
     public void tankDrive(double leftDrive, double rightDrive) {
         this.driveLeft(leftDrive);
