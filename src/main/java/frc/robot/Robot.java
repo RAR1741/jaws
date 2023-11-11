@@ -41,6 +41,9 @@ public class Robot extends TimedRobot {
   boolean tankDriveEnabled = false;
   boolean shooterEnabled = true;
 
+  boolean operatorOverride = false;
+  boolean operatorSafety = false;
+
   private static final double DEADBAND_LIMIT = 0.01;
   private static final double SPEED_CAP = 0.6;
   InputScaler joystickDeadband = new Deadband(DEADBAND_LIMIT);
@@ -145,38 +148,49 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     //Logger.info("Hello World!");
     if (tankDriveEnabled) {
-      double leftDrive = deadband(driver.getLeftY());
-      double rightDrive = deadband(driver.getRightY());
+      double leftDrive = deadband(operatorOverride ? operator.getLeftY() : driver.getLeftY());
+      double rightDrive = deadband(operatorOverride ? operator.getRightY() : driver.getRightY());
 
       drive.tankDrive(leftDrive, rightDrive);
     } else {
-      double speedInput = boost.scale(deadband(driver.getLeftY()));
-      double turnInput = deadband(driver.getRightX());
+      double speedInput = boost.scale(operatorOverride ? operator.getLeftY() : driver.getLeftY());
+      double turnInput = deadband(operatorOverride ? operator.getRightX() : driver.getRightX());
 
       drive.arcadeDrive(turnInput, speedInput);
     }
 
     // Limit speed input to a lower percentage unless boost mode is on
-    boost.setEnabled(driver.getLeftTriggerAxis() > 0.5);
+    boost.setEnabled(operatorOverride ? operator.getLeftTriggerAxis() > 0.5 : driver.getLeftTriggerAxis() > 0.5);
 
-    if (driver.getXButtonPressed()) {
+    if ((!operatorOverride && driver.getXButtonPressed()) || (operatorOverride && operator.getStartButtonPressed())) {
       drive.setPTO(!drive.engaged);
     }
 
-    collection.setCollecting(driver.getYButton());
+    collection.setCollecting(operatorOverride ? operator.getYButton() : driver.getYButton());
 
-    if (driver.getLeftBumperPressed()) {
+    if ((!operatorOverride && driver.getLeftBumperPressed()) || (operatorOverride && operator.getLeftBumperPressed())) {
       collection.setExtended(!collection.engaged);
     }
 
-    if(operator.getBButton()) {
-      //collection.setExtended(false);
-      collection.setEjecting(true);
+    if (operator.getBackButtonPressed())
+    {
+      operatorOverride = !operatorOverride;
     }
 
-    if(shooterEnabled) {
-      camShooter.process(operator.getRightTriggerAxis() > 0.5, operator.getXButton(), operator.getBButton());
-      // camShooter.debug(log);
+    if (operator.getRightBumperPressed()) {
+      operatorSafety = !operatorSafety;
+    }
+
+    if (!operatorSafety) {
+      if (operator.getBButton()) {
+        //collection.setExtended(false);
+        collection.setEjecting(true);
+      }
+
+      if (shooterEnabled) {
+        camShooter.process(operator.getRightTriggerAxis() > 0.5, operator.getXButton(), operator.getBButton());
+        // camShooter.debug(log);
+      }
     }
   }
 
