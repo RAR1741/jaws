@@ -175,7 +175,7 @@ public class Robot extends TimedRobot {
     }
 
     if(shooterEnabled) {
-      camShooter.process(operator.getRightTriggerAxis() > 0, operator.getXButton(), operator.getBButton());
+      camShooter.process(operator.getRightTriggerAxis() > 0.5, operator.getXButton(), operator.getBButton());
       // camShooter.debug(log);
     }
   }
