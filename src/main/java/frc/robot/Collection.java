@@ -38,4 +38,15 @@ public class Collection {
     public void setEjecting(boolean eject) {
         spinWheel.set(eject ? 0.9 : 0);
     }
+
+    public boolean getExtended() {
+        switch (collecSol.get()) {
+            case kForward:
+                return true;
+            case kReverse:
+                return false;
+            default:
+                return false;
+        }
+    }
 }

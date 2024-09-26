@@ -68,7 +68,7 @@ public class Robot extends TimedRobot {
     System.out.print("Initializing drivetrain...");
     DriveModule leftModule = new DriveModule(new Talon(3), new Talon(2));
     DriveModule rightModule = new DriveModule(new Talon(1), new Talon(0));
-    compressor = new Compressor(1, PneumaticsModuleType.CTREPCM);
+    compressor = new Compressor(0, PneumaticsModuleType.CTREPCM);
     collection = new Collection(new Talon(7), new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 2, 3)); //2, 3
     drive = new Drivetrain(leftModule, rightModule, new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 1)); //0, 1
     System.out.println("done");
@@ -162,7 +162,7 @@ public class Robot extends TimedRobot {
     // Limit speed input to a lower percentage unless boost mode is on
     boost.setEnabled(operatorOverride ? operator.getLeftTriggerAxis() > 0.5 : driver.getLeftTriggerAxis() > 0.5);
 
-    if ((!operatorOverride && driver.getXButtonPressed()) || (operatorOverride && operator.getStartButtonPressed())) {
+    if ((!operatorOverride && driver.getStartButtonPressed()) || (operatorOverride && operator.getStartButtonPressed())) {
       drive.setPTO(!drive.engaged);
     }
 
@@ -177,7 +177,7 @@ public class Robot extends TimedRobot {
       operatorOverride = !operatorOverride;
     }
 
-    if (operator.getRightBumperPressed()) {
+    if (driver.getRightBumperPressed() && operator.getRightBumperPressed()) {
       operatorSafety = !operatorSafety;
     }
 
@@ -187,7 +187,7 @@ public class Robot extends TimedRobot {
         collection.setEjecting(true);
       }
 
-      if (shooterEnabled) {
+      if (shooterEnabled && collection.getExtended()) {
         camShooter.process(operator.getRightTriggerAxis() > 0.5, operator.getXButton(), operator.getBButton());
         // camShooter.debug(log);
       }
