@@ -175,10 +175,12 @@ public class Robot extends TimedRobot {
     if (operator.getBackButtonPressed())
     {
       operatorOverride = !operatorOverride;
+      System.out.println("Operator Override " + (operatorOverride ? "Enabled" : "Disabled"));
     }
 
     if (driver.getRightBumperPressed() && operator.getRightBumperPressed()) {
       operatorSafety = !operatorSafety;
+      System.out.println("Operator Safety " + (operatorSafety ? "Enabled" : "Disabled"));
     }
 
     if (!operatorSafety) {
@@ -187,8 +189,8 @@ public class Robot extends TimedRobot {
         collection.setEjecting(true);
       }
 
-      if (shooterEnabled && collection.getExtended()) {
-        camShooter.process(operator.getRightTriggerAxis() > 0.5, operator.getXButton(), operator.getBButton());
+      if (shooterEnabled) {
+        camShooter.process(collection.getExtended() && operator.getRightTriggerAxis() > 0.5, operator.getXButton(), operator.getBButton());
         // camShooter.debug(log);
       }
     }
