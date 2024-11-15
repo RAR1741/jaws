@@ -181,6 +181,13 @@ public class Robot extends TimedRobot {
     if (driver.getRightBumperPressed() && operator.getRightBumperPressed()) {
       operatorSafety = !operatorSafety;
       System.out.println("Operator Safety " + (operatorSafety ? "Enabled" : "Disabled"));
+      if (operatorSafety && camShooter.isEnabled()) {
+        shooterEnabled = false;
+        camShooter.disable();
+      } else if (!operatorSafety && !camShooter.isEnabled()) {
+        shooterEnabled = true;
+        camShooter.enable();
+      }
     }
 
     if (!operatorSafety) {
